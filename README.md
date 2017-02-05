@@ -1,2 +1,7 @@
 # J-JAM-production
-Mental health app
+Personalised mental health monitor
+
+
+##Team lead
+Ayush Kohli
+akohli@siu.edu
