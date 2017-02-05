@@ -11,3 +11,6 @@ akohli@siu.edu
 ##QA Manager
 Mark Ira Goldberg
 markiragoldberg@siu.edu
+
+Jessica Conner-Strunk
+JessicaStrunk@siu.edu
