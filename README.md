@@ -8,6 +8,10 @@ Personalised mental health monitor
 Ayush Kohli
 akohli@siu.edu
 
-##QA Manager
+###QA Manager
 Mark Ira Goldberg
 markiragoldberg@siu.edu
+
+###Team
+James Pelikan
+pelikenesis@siu.edu
