@@ -2,6 +2,8 @@
 Personalised mental health monitor
 
 
-##Team lead
+##Members
+
+###Team lead
 Ayush Kohli
 akohli@siu.edu
