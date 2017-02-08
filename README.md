@@ -1,5 +1,5 @@
 # J-JAM-production
-Personalised mental health monitor
+An AI infused personall blogging web app for users to write about their mental health.
 
 
 ##Members
@@ -12,11 +12,10 @@ akohli@siu.edu
 Mark Ira Goldberg
 markiragoldberg@siu.edu
 
-<<<<<<< HEAD
-Jessica Conner-Strunk
-JessicaStrunk@siu.edu
-=======
 ###Team
 James Pelikan
 pelikenesis@siu.edu
->>>>>>> origin/master
+
+Jessica Conner-Strunk
+JessicaStrunk@siu.edu
+
