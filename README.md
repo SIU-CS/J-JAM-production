@@ -1,5 +1,5 @@
 # J-JAM-production
-Personalised mental health monitor
+An AI infused personall blogging web app for users to write about their mental health.
 
 
 ##Members
@@ -18,3 +18,4 @@ pelikenesis@siu.edu
 
 Jessica Conner-Strunk
 JessicaStrunk@siu.edu
+
