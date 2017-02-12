@@ -36,3 +36,12 @@ pip install -r requirements
 python manage.py runserver
 ```
 
+##Coding style
+[Lets stick to pep8](https://www.python.org/dev/peps/pep-0008/)
+
+```bash
+#print only
+autopep8 script.py
+#inplace changes
+autopep8 -i script.py
+```
