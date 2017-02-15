@@ -88,3 +88,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+#secret_key!!!
+mhapsite/secret.py
