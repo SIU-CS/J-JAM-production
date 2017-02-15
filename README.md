@@ -28,6 +28,9 @@ sudo apt-get install python-virtualenv
 #Create python environment
 virtualenv djangofy 
 
+#Read secret key in mhapsite/secret.py and export as environment variable
+SECRET='key in mhapsite/secret.py'
+
 #Activate it
 source djangofy/bin/activate 
 
