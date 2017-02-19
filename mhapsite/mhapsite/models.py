@@ -14,12 +14,7 @@ from django.utils.text import slugify
 # Post.objects.create(user=user, title="Some time")
 class PostManager(models.Manager):
     def active(self, *args, **kwargs):
-        return super(PostManager, self).filter(draft=False).filter(publish__lte=timezone.now())
-
-def upload_location(instance, filename):
-    return "%s/%s" %(instance.id, filename)
-    #filebase, extension = filename.split(".")
-    #return "%s/%s.%s" %(instance.id, filename)
+        return super(PostManager, self))
 
 class Post(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
@@ -42,7 +37,7 @@ class Post(models.Model):
         return reverse("posts:detail", kwargs={"slug": self.slug})
 
     class Meta:
-        ordering = ["-timestamp", "-updated"]
+        ordering = ["-created", "-updated"]
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)
