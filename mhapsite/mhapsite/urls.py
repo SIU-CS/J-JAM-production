@@ -16,11 +16,15 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from mhap import views as mhapviews
 
 urlpatterns = [
     url(r'^mhap/', include('mhap.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,  {'next_page': '/mhap/'}, name='logout'), #point to mhap
-    #{'template_name': 'logout.html'}
+    url(r'^signup/$', mhapviews.signup, name='signup'),
+    url(r'^account_activation_sent/$', mhapviews.account_activation_sent, name='account_activation_sent'),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        mhapviews.activate, name='activate'),
 ]
