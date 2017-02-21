@@ -52,6 +52,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.profile.email_confirmed = True
         user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         return redirect('index')
     else:
