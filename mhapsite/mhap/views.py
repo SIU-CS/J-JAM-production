@@ -13,7 +13,7 @@ from django.contrib.sites.shortcuts import get_current_site
 
 @login_required
 def index(request):
-    return HttpResponse("Hello dawgs. This is mhap.")
+    return render(request,'index.html')
 
 #https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html#sign-up-with-profile-model
 def signup(request):

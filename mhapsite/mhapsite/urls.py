@@ -20,6 +20,7 @@ from mhap import views as mhapviews
 
 urlpatterns = [
     url(r'^mhap/', include('mhap.urls')),
+     url(r'^oauth/', include('social.apps.django_app.urls', namespace='social')),  # <--
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,  {'next_page': '/mhap/'}, name='logout'), #point to mhap
