@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from mhap import views as mhapviews
 
+#https://simpleisbetterthancomplex.com/tutorial/2016/09/19/how-to-create-password-reset-view.html
+
 urlpatterns = [
     url(r'^mhap/', include('mhap.urls')),
     url('', include('social_django.urls', namespace='social')),
