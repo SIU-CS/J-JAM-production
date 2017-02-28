@@ -21,12 +21,9 @@ from mhap import views as mhapviews
 #https://simpleisbetterthancomplex.com/tutorial/2016/09/19/how-to-create-password-reset-view.html
 
 urlpatterns = [
-<<<<<<< HEAD
     url(r'^mhap/', include('mhap.urls', namespace='mhap')),
-=======
     url(r'^mhap/', include('mhap.urls')),
     url('', include('social_django.urls', namespace='social')),
->>>>>>> ayush
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,  {'next_page': '/mhap/'}, name='logout'), #point to mhap

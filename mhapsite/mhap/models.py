@@ -3,10 +3,13 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-<<<<<<< HEAD
 from django.db.models.signals import pre_save
 from django.utils import timezone
 from django.utils.text import slugify
+
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 # MVC MODEL VIEW CONTROLLER
@@ -22,28 +25,7 @@ from django.utils.text import slugify
     #filebase, extension = filename.split(".")
     #return "%s/%s.%s" %(instance.id, filename)
 
-class Post(models.Model):
-    # user_id = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
-    title = models.CharField(max_length=120)
-    # slug = models.SlugField(unique=True)
-    content = models.TextField()
-    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-    created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    # secret = models.BooleanField()
 
-    # objects = PostManager()
-
-    def __unicode__(self):
-        return self.title
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse("mhap:detail", kwargs={"id": self.id})
-
-    class Meta:
-        ordering = ["-created", "-updated"]
 
 # def create_slug(instance, new_slug=None):
 #     slug = slugify(instance.title)
@@ -61,10 +43,6 @@ class Post(models.Model):
 #         instance.slug = create_slug(instance)
 
 # pre_save.connect(pre_save_post_receiver, sender=Post)
-=======
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 
@@ -74,6 +52,8 @@ class Profile(models.Model):
     email_confirmed = models.BooleanField(default=False)
     birth_date = models.DateField(null=True, blank=True)
 
+    def __str__(self):
+        return str(self.user)
 
 @receiver(post_save, sender=User, dispatch_uid='update_user_profile')
 def update_user_profile(sender, instance, created, **kwargs):
@@ -85,4 +65,28 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 #https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html#sign-up-with-profile-model
 
->>>>>>> ayush
+
+class Post(models.Model):
+    user_id = models.ForeignKey(Profile, default=-1)
+    title = models.CharField(max_length=120)
+    #slug = models.SlugField(unique=True,default='NULL')
+    content = models.TextField()
+    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    created = models.DateTimeField(auto_now=False, auto_now_add=True)
+    secret = models.BooleanField(default=True)
+
+    # objects = PostManager()
+
+    
+
+    def __unicode__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("mhap:detail", kwargs={"id": str(self.user_id)})
+
+    class Meta:
+        ordering = ["-created", "-updated"]

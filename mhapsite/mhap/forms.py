@@ -1,5 +1,6 @@
 from django import forms
-<<<<<<< HEAD
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 from .models import Post
 
@@ -10,9 +11,8 @@ class PostForm(forms.ModelForm):
             "title",
             "content"
         ]
-=======
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+
+
 
 class SignUpForm(UserCreationForm):
     print "IN SIGNUP"
@@ -34,4 +34,3 @@ class SignUpForm(UserCreationForm):
         if email and User.objects.filter(email=email).exclude(username=username).count():
             raise forms.ValidationError(u'Email addresses must be unique.')
         return email
->>>>>>> ayush

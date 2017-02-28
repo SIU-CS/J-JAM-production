@@ -37,10 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
-=======
     'social_django',
->>>>>>> ayush
     'mhap',
 ]
 
@@ -174,3 +171,5 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SEC
 
 #SOCIAL_AUTH_GOOGLE_OAUTH2_USE_DEPRECATED_API = True
 #SOCIAL_AUTH_GOOGLE_PLUS_USE_DEPRECATED_API = True
+
+#AUTH_USER_MODEL = 'django.contrib.auth.models'
