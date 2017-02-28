@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login,authenticate
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -13,7 +13,7 @@ from django.contrib.sites.shortcuts import get_current_site
 
 @login_required
 def index(request):
-    return HttpResponse("Hello dawgs. This is mhap.")
+    return render(request,'index.html')
 
 #https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html#sign-up-with-profile-model
 def signup(request):
@@ -21,8 +21,20 @@ def signup(request):
         form  = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            #user.refresh_from_db()
             user.is_active = False
-            user.save()
+            birth = form.cleaned_data.get('birth_date')
+            print birth, "BIRTHDATE"
+            user.birth_date = form.cleaned_data.get('birth_date')
+            print user.birth_date, "USER BIRTHDATE"
+            print user.save()
+            print user.refresh_from_db()
+            print user.profile
+            print user.birth_date, "USER BIRTHDATE2"
+            print user.profile,"PROFILE FAM"
+            user.profile.birth_date = birth
+            print user.profile.birth_date
+            user.profile.save()
             this_site = get_current_site(request)
             subject = "Activate Mhap account"
             message = render_to_string('account_activation_email.html', {
@@ -51,7 +63,9 @@ def activate(request, uidb64, token):
     if user is not None and activation_token.check_token(user, token):
         user.is_active = True
         user.profile.email_confirmed = True
+        print"CHANGING ACTIVE AND EMAIL CONFIRMED TO TRUE"
         user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         return redirect('index')
     else:
