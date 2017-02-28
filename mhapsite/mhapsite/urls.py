@@ -19,6 +19,7 @@ from django.contrib.auth import views as auth_views
 from mhap import views as mhapviews
 
 #https://simpleisbetterthancomplex.com/tutorial/2016/09/19/how-to-create-password-reset-view.html
+#http://stackoverflow.com/questions/9033287/lock-out-users-after-too-many-failed-login-attempts
 
 urlpatterns = [
     url(r'^mhap/', include('mhap.urls', namespace='mhap')),
