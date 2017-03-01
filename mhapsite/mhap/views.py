@@ -22,6 +22,7 @@ from django.contrib.auth.models import User
 #     return HttpResponse("Hello dawgs. This is mhap.")
 @login_required
 def post_list(request):
+    print request.user
     queryset = Post.objects.all()
     context = {
         "object_list": queryset,
