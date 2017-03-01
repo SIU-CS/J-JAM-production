@@ -13,8 +13,6 @@ class PostForm(forms.ModelForm):
             "secret"
         ]
 
-
-
 class SignUpForm(UserCreationForm):
     print "IN SIGNUP"
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')

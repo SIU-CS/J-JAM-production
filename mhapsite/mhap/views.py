@@ -14,7 +14,7 @@ from .forms import SignUpForm
 from .tokens import activation_token
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import PostForm
-from .models import Post
+from .models import Post,Profile
 from django.contrib.auth.models import User
 # Create your views here.
 
@@ -32,6 +32,9 @@ def post_list(request):
 @login_required
 def post_detail(request, slug=None):
     instance = get_object_or_404(Post, slug=slug)
+    print instance 
+    print request.user
+   # print instance.user_id
     context = {
         "title": instance.title,
         "instance": instance,
@@ -40,9 +43,22 @@ def post_detail(request, slug=None):
 @login_required
 def post_create(request):
     form = PostForm(request.POST or None)
+    print request.user,"REQUEST"
+
     if form.is_valid():
         instance = form.save(commit=False)
+        print request.user.is_authenticated()
+        print "IN VALID"
+        #instance.refresh_from_db()
+       
+        print Profile.objects.get(user=request.user) , "PROFILE"
+       
+        instance.user_id = Profile.objects.get(user=request.user)
+        print Profile.objects.get(user=request.user)
+        #instance.user = request.user
+        print instance.user_id,"USER INSTANCE"
         instance.save()
+        print instance.refresh_from_db()
         messages.success(request, "Successfully Created")
         return HttpResponseRedirect(instance.get_absolute_url())
     context = {
@@ -91,7 +107,7 @@ def signup(request):
             user.birth_date = form.cleaned_data.get('birth_date')
             print user.birth_date, "USER BIRTHDATE"
             print user.save()
-            print user.refresh_from_db()
+            #print user.refresh_from_db()
             print user.profile
             print user.birth_date, "USER BIRTHDATE2"
             print user.profile,"PROFILE FAM"
