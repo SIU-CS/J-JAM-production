@@ -26,26 +26,6 @@ from django.dispatch import receiver
     #return "%s/%s.%s" %(instance.id, filename)
 
 
-
-# def create_slug(instance, new_slug=None):
-#     slug = slugify(instance.title)
-#     if new_slug is not None:
-#         slug = new_slug
-#     queryset = Post.objects.filter(slug=slug).order_by("-id")
-#     exists = queryset.exists()
-#     if exists:
-#         new_slug = "%s-%s" %(slug, queryset.first().id)
-#         return create_slug(instance, new_slug=new_slug)
-#     return slug
-
-# def pre_save_post_receiver(sender, instance, *args, **kwargs):
-#     if not instance.slug:
-#         instance.slug = create_slug(instance)
-
-# pre_save.connect(pre_save_post_receiver, sender=Post)
-
-
-
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)
@@ -69,7 +49,7 @@ def update_user_profile(sender, instance, created, **kwargs):
 class Post(models.Model):
     user_id = models.ForeignKey(Profile, default=-1)
     title = models.CharField(max_length=120)
-    #slug = models.SlugField(unique=True,default='NULL')
+    slug = models.SlugField(unique=True)
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -86,7 +66,24 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("mhap:detail", kwargs={"id": str(self.user_id)})
+        return reverse("mhap:detail", kwargs={"slug": str(self.slug)})
 
     class Meta:
         ordering = ["-created", "-updated"]
+
+def create_slug(instance, new_slug=None):
+    slug = slugify(instance.title)
+    if new_slug is not None:
+        slug = new_slug
+    queryset = Post.objects.filter(slug=slug).order_by("-id")
+    exists = queryset.exists()
+    if exists:
+        new_slug = "%s-%s" %(slug, queryset.first().id)
+        return create_slug(instance, new_slug=new_slug)
+    return slug
+
+def pre_save_post_receiver(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = create_slug(instance)
+
+pre_save.connect(pre_save_post_receiver, sender=Post)
