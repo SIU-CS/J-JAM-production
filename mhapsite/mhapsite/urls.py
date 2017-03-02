@@ -23,12 +23,12 @@ from axes.decorators import watch_login
 
 urlpatterns = [
     url(r'^mhap/', include('mhap.urls', namespace='mhap')),
-    url(r'^mhap/', include('mhap.urls')),
+   # url(r'^mhap/', include('mhap.urls')),
     url('', include('social_django.urls', namespace='social')),
     url(r'^locked/$', mhapviews.locked_out, name='locked_out'),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
-    url(r'^logout/$', auth_views.logout,  {'next_page': '/mhap/'}, name='logout'), #point to mhap
+    url(r'^logout/$', auth_views.logout,  {'next_page': '/login/'}, name='logout'), #point to mhap
     url(r'^signup/$', mhapviews.signup, name='signup'),
     url(r'^account_activation_sent/$', mhapviews.account_activation_sent, name='account_activation_sent'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
