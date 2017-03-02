@@ -12,18 +12,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Create your models here.
-# MVC MODEL VIEW CONTROLLER
 
-# Post.objects.all()
-# Post.objects.create(user=user, title="Some time")
-# class PostManager(models.Manager):
-#     def active(self, *args, **kwargs):
-#         return super(PostManager, self).filter(draft=False).filter(publish__lte=timezone.now())
-
-# def upload_location(instance, filename):
-#     return "%s/%s" %(instance.id, filename)
-    #filebase, extension = filename.split(".")
-    #return "%s/%s.%s" %(instance.id, filename)
+class PostManager(models.Manager):
+    def active(self, *args, **kwargs):
+        blog_user = kwargs.items()[0][1]
+        print type(blog_user)
+        return super(PostManager, self).all().filter(user_id=blog_user).filter(secret=False)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)
@@ -32,6 +26,9 @@ class Profile(models.Model):
     
     def __str__(self):
         return str(self.user)
+
+    def get_absolute_url(self):
+        return reverse("mhap:index", kwargs={"username": self.user})
 
 
 class Post(models.Model):
@@ -43,7 +40,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     secret = models.BooleanField(default=True)
     user_id = models.ForeignKey(Profile, null=True)
-    # objects = PostManager()
+    objects = PostManager()
 
     
 
@@ -54,7 +51,13 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("mhap:detail", kwargs={"slug": str(self.slug)})
+        return reverse("mhap:detail", kwargs={"username": self.user_id.user, "slug": self.slug})
+
+    def get_list_url(self):
+        return reverse("mhap:list", kwargs={"username": self.user_id.user})
+
+    def get_homepage_url(self):
+        return reverse("mhap:index", kwargs={"username": self.user_id.user})
 
     class Meta:
         ordering = ["-created", "-updated"]

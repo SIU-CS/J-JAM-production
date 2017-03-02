@@ -1,11 +1,11 @@
 
 from django.contrib import messages,auth
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login,authenticate
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-
+from django.core.urlresolvers import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
@@ -20,20 +20,31 @@ from axes.utils import reset
 
 # Create your views here.
 
-# def index(request):
-#     return HttpResponse("Hello dawgs. This is mhap.")
 @login_required
-def post_list(request):
-    print request.user
-    queryset = Post.objects.all()
+def post_list(request, username=None):
+    current_user = Profile.objects.get(user=request.user).user
+    blog_user = get_object_or_404(User, username=username)
+    user_prof = get_object_or_404(Profile, user=blog_user)
+    print type(user_prof)
+    if ((not current_user.is_staff) and (not current_user.is_superuser)) and (blog_user.is_staff or blog_user.is_superuser):
+        raise Http404
+    queryset = Post.objects.active(b_user=user_prof)
     context = {
         "object_list": queryset,
         "title": "List"
     }
     return render(request, "post_list.html", context)
 @login_required
-def post_detail(request, slug=None):
-    instance = get_object_or_404(Post, slug=slug)
+def post_detail(request, username=None, slug=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    blog_user = get_object_or_404(User, username=username)
+    if ((not current_user.is_staff) and (not current_user.is_superuser)) and (blog_user.is_staff or blog_user.is_superuser):
+        raise Http404
+    if current_user != blog_user:
+        instance = get_object_or_404(Post, slug=slug, secret=False)
+    else:
+        instance = get_object_or_404(Post, slug=slug)
     print instance 
     print request.user
    # print instance.user_id
@@ -43,7 +54,12 @@ def post_detail(request, slug=None):
     }
     return render(request, "post_detail.html", context)
 @login_required
-def post_create(request):
+def post_create(request, username=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    blog_user = get_object_or_404(User, username=username)
+    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
+        raise Http404
     form = PostForm(request.POST or None)
     print request.user,"REQUEST"
 
@@ -68,7 +84,12 @@ def post_create(request):
     }
     return render(request, "post_form.html", context)
 @login_required
-def post_update(request, slug=None):
+def post_update(request, username=None, slug=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    blog_user = get_object_or_404(User, username=username)
+    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
+        raise Http404
     instance = get_object_or_404(Post, slug=slug)
     form = PostForm(request.POST or None, instance=instance)
     if form.is_valid():
@@ -83,18 +104,32 @@ def post_update(request, slug=None):
     }
     return render(request, "post_form.html", context)
 @login_required
-def post_delete(request, slug=None):
+def post_delete(request, username=None, slug=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    blog_user = get_object_or_404(User, username=username)
+    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
+        raise Http404
     instance = get_object_or_404(Post, slug=slug)
+    destination = instance.get_list_url()
     instance.delete()
     messages.success(request, "Successfully Deleted")
-    return redirect("mhap:list")
+    return redirect(destination)
 
 
 # Create your views here.
 
 @login_required
-def index(request):
-    return render(request,'index.html')
+def index(request, username=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    blog_user = get_object_or_404(User, username=username)
+    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
+        raise Http404
+    context = {
+        "user": blog_user
+    }
+    return render(request,'index.html', context)
 
 #https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html#sign-up-with-profile-model
 def signup(request):
@@ -148,7 +183,7 @@ def activate(request, uidb64, token):
         user.save()
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
-        return redirect('index')
+        return redirect(reverse("mhap:index", kwargs={"username": self.user}))
     else:
         return render(request, 'account_activation_invalid.html')
 

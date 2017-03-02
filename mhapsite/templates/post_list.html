@@ -3,10 +3,10 @@
 {% block content %}
     <h1>{{ title }} works!</h1>
     {% for obj in object_list %}
-        <a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a><br/>
-        {{ obj.content }}<br/>
-        {{ obj.updated }}<br/>
-        {{ obj.created }}<br/>
-        {{ obj.slug }}<br/><br/>
+        Title: <a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a><br/>
+        Content: {{ obj.content }}<br/>
+        Created: {{ obj.created }}<br/>
+        Author: {{ obj.user_id }}<br/>
+        Secret: {{ obj.secret }}<br/>
     {% endfor %}
 {% endblock content %}
