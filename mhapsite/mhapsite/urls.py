@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from mhap import views as mhapviews
-
+from axes.decorators import watch_login
 #https://simpleisbetterthancomplex.com/tutorial/2016/09/19/how-to-create-password-reset-view.html
 #http://stackoverflow.com/questions/9033287/lock-out-users-after-too-many-failed-login-attempts
 
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^mhap/', include('mhap.urls', namespace='mhap')),
     url(r'^mhap/', include('mhap.urls')),
     url('', include('social_django.urls', namespace='social')),
+    url(r'^locked/$', mhapviews.locked_out, name='locked_out'),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,  {'next_page': '/mhap/'}, name='logout'), #point to mhap
@@ -37,4 +38,5 @@ urlpatterns = [
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         auth_views.password_reset_confirm, name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
+    url(r'^captcha/', include('captcha.urls')),
 ]
