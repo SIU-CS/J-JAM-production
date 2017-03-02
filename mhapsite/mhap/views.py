@@ -3,7 +3,7 @@ from django.contrib import messages,auth
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login,authenticate
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 
 from django.utils.encoding import force_bytes, force_text
@@ -34,9 +34,13 @@ def post_list(request):
 @login_required
 def post_detail(request, slug=None):
     instance = get_object_or_404(Post, slug=slug)
-    print instance 
-    print request.user
-   # print instance.user_id
+    #import pdb; pdb.set_trace()
+    
+    # if not allowed to see post, raise 404
+    if instance.user_id.user != request.user:
+        if instance.secret:
+            raise Http404
+    
     context = {
         "title": instance.title,
         "instance": instance,
