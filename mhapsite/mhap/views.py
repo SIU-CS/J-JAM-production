@@ -1,8 +1,7 @@
 
-from django.contrib import messages
+from django.contrib import messages,auth
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login,authenticate
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -13,9 +12,12 @@ from django.template.loader import render_to_string
 from .forms import SignUpForm
 from .tokens import activation_token
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm
+from .forms import PostForm,AxesCaptchaForm
 from .models import Post,Profile
 from django.contrib.auth.models import User
+from axes.utils import reset
+
+
 # Create your views here.
 
 # def index(request):
@@ -149,3 +151,15 @@ def activate(request, uidb64, token):
         return redirect('index')
     else:
         return render(request, 'account_activation_invalid.html')
+
+def locked_out(request):
+    if request.POST:
+        form = AxesCaptchaForm(request.POST)
+        if form.is_valid():
+            #ip = get_ip_address_from_request(request)
+            reset()
+            return HttpResponseRedirect('/login')
+    else:
+        form = AxesCaptchaForm()
+
+    return render(request,'locked_out.html', dict(form=form))
