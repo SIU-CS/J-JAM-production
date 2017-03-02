@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'mhap',
+    'axes',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -175,3 +177,25 @@ PASSWORD_RESET_TIMEOUT_DAYS = 2
 #SOCIAL_AUTH_GOOGLE_PLUS_USE_DEPRECATED_API = True
 
 #AUTH_USER_MODEL = 'django.contrib.auth.models'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+AXES_COOLOFF_TIME = timedelta(0, 180)
+
+AXES_LOCKOUT_URL = '/locked'
+
+AXES_USERNAME_FORM_FIELD = 'email'
+
+NOCAPTCHA = True
+
