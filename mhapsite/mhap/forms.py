@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+from captcha.fields import CaptchaField
 from .models import Post
 
 class PostForm(forms.ModelForm):
@@ -33,3 +33,8 @@ class SignUpForm(UserCreationForm):
         if email and User.objects.filter(email=email).exclude(username=username).count():
             raise forms.ValidationError(u'Email addresses must be unique.')
         return email
+
+
+
+class AxesCaptchaForm(forms.Form):
+    captcha = CaptchaField()
