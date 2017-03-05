@@ -26,9 +26,17 @@ def post_list(request, username=None):
     blog_user = get_object_or_404(User, username=username)
     user_prof = get_object_or_404(Profile, user=blog_user)
     print type(user_prof)
+    print str(username)
+    print str(request.user)
+    print "BEFORE IF"
+    if(blog_user != current_user): 
+        print "IN IF"
+        raise Http404
+    print "AFTER IF"
     if ((not current_user.is_staff) and (not current_user.is_superuser)) and (blog_user.is_staff or blog_user.is_superuser):
         raise Http404
-    queryset = Post.objects.active(b_user=user_prof)
+    queryset = Post.objects.filter(user_id=user_prof)
+    print queryset
     context = {
         "object_list": queryset,
         "title": "List"
@@ -116,7 +124,14 @@ def post_delete(request, username=None, slug=None):
     messages.success(request, "Successfully Deleted")
     return redirect(destination)
 
-
+def base(request):
+    print request
+    print request.user
+    blog_user = get_object_or_404(User, username=username)
+    context = {
+        "user": blog_user
+    }
+    return render(request,'index.html', context)
 # Create your views here.
 
 @login_required
@@ -183,7 +198,8 @@ def activate(request, uidb64, token):
         user.save()
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
-        return redirect(reverse("mhap:index", kwargs={"username": self.user}))
+        return redirect(reverse("mhap:index", kwargs={"username": user}))
+        #return redirect('index')
     else:
         return render(request, 'account_activation_invalid.html')
 
