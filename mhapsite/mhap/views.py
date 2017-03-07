@@ -1,5 +1,5 @@
 
-from django.contrib import messages,auth
+from django.contrib import messages, auth
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login,authenticate
@@ -125,14 +125,8 @@ def post_delete(request, username=None, slug=None):
     return redirect(destination)
 
 def base(request):
-    print request
-    print request.user
-    blog_user = get_object_or_404(User, username=username)
-    context = {
-        "user": blog_user
-    }
-    return render(request,'index.html', context)
-# Create your views here.
+    return redirect(reverse("mhap:index", kwargs={"username": request.user}))
+
 
 @login_required
 def index(request, username=None):

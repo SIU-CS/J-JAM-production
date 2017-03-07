@@ -43,7 +43,7 @@ class Post(models.Model):
     objects = PostManager()
 
     
-
+    
     def __unicode__(self):
         return self.title
 
