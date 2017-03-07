@@ -76,7 +76,7 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 
 def create_slug(instance, new_slug=None):
-    slug = slugify(instance.title)
+    slug = slugify(str(instance.title) + "-"+ str(instance.user_id.user))
     if new_slug is not None:
         slug = new_slug
     queryset = Post.objects.filter(slug=slug).order_by("-id")
@@ -87,7 +87,6 @@ def create_slug(instance, new_slug=None):
     return slug
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = create_slug(instance)
+    instance.slug = create_slug(instance)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
