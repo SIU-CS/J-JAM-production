@@ -1,3 +1,11 @@
+'''
+TODO
+1. Settings page with username,birthdate change and password change
+
+#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+
+'''
+
 
 from django.contrib import messages, auth
 from django.http import HttpResponse, HttpResponseRedirect, Http404

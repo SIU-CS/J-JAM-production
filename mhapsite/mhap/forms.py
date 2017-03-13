@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from captcha.fields import CaptchaField
-from .models import Post
+from .models import Post,User
 
 class PostForm(forms.ModelForm):
     class Meta:
