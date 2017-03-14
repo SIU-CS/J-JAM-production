@@ -29,21 +29,12 @@ from axes.utils import reset
 # Create your views here.
 
 @login_required
-def post_list(request, username=None):
-    current_user = Profile.objects.get(user=request.user).user
-    blog_user = get_object_or_404(User, username=username)
-    user_prof = get_object_or_404(Profile, user=blog_user)
+def post_list(request):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
     print type(user_prof)
-    print str(username)
-    print str(request.user)
-    print "BEFORE IF"
-    if(blog_user != current_user): 
-        print "IN IF"
-        raise Http404
-    print "AFTER IF"
-    if ((not current_user.is_staff) and (not current_user.is_superuser)) and (blog_user.is_staff or blog_user.is_superuser):
-        raise Http404
-    queryset = Post.objects.filter(user_id=user_prof)
+    print type(current_user)
+    queryset = Post.objects.user_list(user=user_prof)
     print queryset
     context = {
         "object_list": queryset,
@@ -51,16 +42,15 @@ def post_list(request, username=None):
     }
     return render(request, "post_list.html", context)
 @login_required
-def post_detail(request, username=None, slug=None):
+def post_detail(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    blog_user = get_object_or_404(User, username=username)
-    if ((not current_user.is_staff) and (not current_user.is_superuser)) and (blog_user.is_staff or blog_user.is_superuser):
+    instance = get_object_or_404(Post, slug=slug)
+    print "secret: " + str(instance.secret)
+    print "current user: " + str(user_prof)
+    print "blog user: " + str(instance.user_id)
+    if instance.secret and (instance.user_id != user_prof):
         raise Http404
-    if current_user != blog_user:
-        instance = get_object_or_404(Post, slug=slug, secret=False)
-    else:
-        instance = get_object_or_404(Post, slug=slug)
     print instance 
     print request.user
    # print instance.user_id
@@ -70,12 +60,9 @@ def post_detail(request, username=None, slug=None):
     }
     return render(request, "post_detail.html", context)
 @login_required
-def post_create(request, username=None):
+def post_create(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    blog_user = get_object_or_404(User, username=username)
-    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
-        raise Http404
     form = PostForm(request.POST or None)
     print request.user,"REQUEST"
 
@@ -100,13 +87,12 @@ def post_create(request, username=None):
     }
     return render(request, "post_form.html", context)
 @login_required
-def post_update(request, username=None, slug=None):
+def post_update(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    blog_user = get_object_or_404(User, username=username)
-    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
-        raise Http404
     instance = get_object_or_404(Post, slug=slug)
+    if instance.user_id != user_prof:
+        raise Http404
     form = PostForm(request.POST or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
@@ -120,31 +106,23 @@ def post_update(request, username=None, slug=None):
     }
     return render(request, "post_form.html", context)
 @login_required
-def post_delete(request, username=None, slug=None):
+def post_delete(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    blog_user = get_object_or_404(User, username=username)
-    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
-        raise Http404
     instance = get_object_or_404(Post, slug=slug)
+    if instance.user_id != user_prof:
+        raise Http404
     destination = instance.get_list_url()
     instance.delete()
     messages.success(request, "Successfully Deleted")
     return redirect(destination)
 
-def base(request):
-    return redirect(reverse("mhap:index", kwargs={"username": request.user}))
-
-
 @login_required
-def index(request, username=None):
+def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    blog_user = get_object_or_404(User, username=username)
-    if (current_user != blog_user) and (not current_user.is_staff) and (not current_user.is_superuser):
-        raise Http404
     context = {
-        "user": blog_user
+        "user": current_user
     }
     return render(request,'index.html', context)
 
@@ -200,7 +178,7 @@ def activate(request, uidb64, token):
         user.save()
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
-        return redirect(reverse("mhap:index", kwargs={"username": user}))
+        return redirect(reverse("mhap:index"))
         #return redirect('index')
     else:
         return render(request, 'account_activation_invalid.html')
