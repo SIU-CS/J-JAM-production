@@ -20,7 +20,7 @@ from django.template.loader import render_to_string
 from .forms import SignUpForm
 from .tokens import activation_token
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm
+from .forms import PostForm,AxesCaptchaForm,ProfileForm,UserForm
 from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
@@ -99,6 +99,30 @@ def post_create(request, username=None):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
+@login_required
+def settings(request,username=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    print user_prof
+    print current_user
+    instance = get_object_or_404(User,username=current_user)
+    print instance
+    #form = ProfileForm(request.POST or None,instance=instance)
+    #print form
+
+    form2 = UserForm(request.POST or None, instance=instance)
+    print form2
+    context = {
+        'form':form2,
+    }
+    if form2.is_valid():
+        instance = form2.save(commit=False)
+        instance.save()
+        messages.success(request, "Saved", extra_tags='html_safe')
+        return redirect(reverse("mhap:index", kwargs={"username": request.user}))
+    return render(request,'settings.html',context)
+
 @login_required
 def post_update(request, username=None, slug=None):
     user_prof = Profile.objects.get(user=request.user)
