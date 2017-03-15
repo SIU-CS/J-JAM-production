@@ -27,7 +27,7 @@ class ProfileForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     password1=forms.PasswordInput()
     #password2=forms.PasswordInput()
-
+    #http://stackoverflow.com/questions/4939737/cant-add-field-to-modelform-at-init?rq=1
     class Meta:
         model = User
         fields = ('username',)
