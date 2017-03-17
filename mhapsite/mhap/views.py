@@ -1,6 +1,8 @@
 '''
 TODO
-1. Settings page with username,birthdate change and password change
+1. Settings page with password change
+2. Need to link database and process forms properly
+3. Fix broken reroute to old username
 
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
@@ -101,26 +103,27 @@ def post_create(request, username=None):
     return render(request, "post_form.html", context)
 
 @login_required
-def settings(request,username=None):
+def settings(request, username=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     print user_prof
     print current_user
-    instance = get_object_or_404(User,username=current_user)
+    instance = get_object_or_404(User, username=current_user)
+    instance2 = get_object_or_404(Profile,user=request.user)
     print instance
-    #form = ProfileForm(request.POST or None,instance=instance)
-    #print form
 
-    form2 = UserForm(request.POST or None, instance=instance)
+    form = UserForm(request.POST or None, instance=instance)
+    form2 = ProfileForm(request.POST or None, instance=instance2)
     print form2
     context = {
-        'form':form2,
+        'form':form,
+        'form2':form2,
     }
-    if form2.is_valid():
-        instance = form2.save(commit=False)
+    if form.is_valid():
+        instance = form.save(commit=False)
         instance.save()
         messages.success(request, "Saved", extra_tags='html_safe')
-        return redirect(reverse("mhap:index", kwargs={"username": request.user}))
+        return redirect(reverse("mhap:index", kwargs={"username": current_user}))
     return render(request,'settings.html',context)
 
 @login_required

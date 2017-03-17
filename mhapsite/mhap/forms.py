@@ -20,12 +20,10 @@ class PostForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = [
-            "birth_date"
-        ]
+        fields = ("birth_date",)
 
 class UserForm(forms.ModelForm):
-    password1=forms.PasswordInput()
+    password1 = forms.PasswordInput()
     #password2=forms.PasswordInput()
     #http://stackoverflow.com/questions/4939737/cant-add-field-to-modelform-at-init?rq=1
     class Meta:
