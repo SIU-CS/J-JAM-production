@@ -35,6 +35,7 @@ class Post(models.Model):
      
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
+    good_sentiment = models.BooleanField(default=True)
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -82,8 +83,14 @@ def create_slug(instance, new_slug=None):
         new_slug = "%s-%s" %(slug, queryset.first().id)
         return create_slug(instance, new_slug=new_slug)
     return slug
+    
+def evaluate_sentiment(instance):
+    sentiment = True
+    // TODO actually evaluate the sentiment!
+    return sentiment
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     instance.slug = create_slug(instance)
+    instance.good_sentiment = evaluate_sentiment(instance)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
