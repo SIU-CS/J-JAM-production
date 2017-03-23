@@ -86,7 +86,7 @@ def create_slug(instance, new_slug=None):
     
 def evaluate_sentiment(instance):
     sentiment = True
-    // TODO actually evaluate the sentiment!
+    # TODO actually evaluate the sentiment!
     return sentiment
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
