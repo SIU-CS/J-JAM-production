@@ -14,10 +14,10 @@ from django.dispatch import receiver
 # Create your models here.
 
 class PostManager(models.Manager):
-    def active(self, *args, **kwargs):
-        blog_user = kwargs.items()[0][1]
-        print type(blog_user)
-        return super(PostManager, self).all().filter(user_id=blog_user).filter(secret=False)
+    def user_list(self, *args, **kwargs):
+        user = kwargs.items()[0][1]
+        print type(user)
+        return super(PostManager, self).all().filter(user_id=user)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)
@@ -51,13 +51,10 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("mhap:detail", kwargs={"username": self.user_id.user, "slug": self.slug})
+        return reverse("mhap:detail", kwargs={"slug": self.slug})
 
     def get_list_url(self):
-        return reverse("mhap:list", kwargs={"username": self.user_id.user})
-
-    def get_homepage_url(self):
-        return reverse("mhap:index", kwargs={"username": self.user_id.user})
+        return reverse("mhap:list")
 
     class Meta:
         ordering = ["-created", "-updated"]
@@ -76,7 +73,7 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 
 def create_slug(instance, new_slug=None):
-    slug = slugify(instance.title)
+    slug = slugify(str(instance.title) + "-"+ str(instance.user_id.user))
     if new_slug is not None:
         slug = new_slug
     queryset = Post.objects.filter(slug=slug).order_by("-id")
@@ -87,7 +84,6 @@ def create_slug(instance, new_slug=None):
     return slug
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = create_slug(instance)
+    instance.slug = create_slug(instance)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
