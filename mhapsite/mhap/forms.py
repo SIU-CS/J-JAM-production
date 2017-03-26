@@ -16,6 +16,36 @@ class PostForm(forms.ModelForm):
 
 
 #http://stackoverflow.com/questions/28458770/how-can-create-a-model-form-in-django-with-a-one-to-one-relation-with-another-mo
+#http://stackoverflow.com/questions/11923317/creating-django-forms
+class PasswordForm(forms.Form):
+    password1 = forms.CharField(label=("Password"), widget=forms.PasswordInput)
+    password2 = forms.CharField(label=("Password (again)"), widget=forms.PasswordInput)
+
+
+
+    def clean(self):
+        print "IN CLEAN"
+        print self.errors
+        password_two = self.cleaned_data.get('password2')
+        password_one = self.cleaned_data.get('password1')
+        print password_one,"PASSWORD !"
+        print password_one,password_two
+        if not password_two:
+            raise forms.ValidationError("Must confirm your password")
+        if password_one != password_two:
+            raise forms.ValidationError("Passwords dont match")
+        valid = self.user.check_password(self.cleaned_data['password1'])
+        print self.user
+        if not valid:
+            raise forms.ValidationError("Password Incorrect")
+        print self.errors
+        return valid
+
+
+    def __init__(self,user=None,*args,**kwargs):
+        self.user = user
+        print self.user, "IN INIT"
+        super(PasswordForm, self).__init__(*args, **kwargs)
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -23,7 +53,7 @@ class ProfileForm(forms.ModelForm):
         fields = ("birth_date",)
 
 class UserForm(forms.ModelForm):
-    password1 = forms.PasswordInput()
+    #password1 = forms.PasswordInput()
     #password2=forms.PasswordInput()
     #http://stackoverflow.com/questions/4939737/cant-add-field-to-modelform-at-init?rq=1
     class Meta:
