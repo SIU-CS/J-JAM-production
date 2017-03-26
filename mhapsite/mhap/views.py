@@ -46,6 +46,7 @@ def post_detail(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
+    print "sentiment: " + str(instance.sentiment)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -56,6 +57,7 @@ def post_detail(request, slug=None):
    # print instance.user_id
     context = {
         "title": instance.title,
+        "sentiment": instance.sentiment,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
