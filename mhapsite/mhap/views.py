@@ -1,6 +1,8 @@
 '''
 TODO
-1. Settings page with username,birthdate change and password change
+1. Settings page with password change
+2. Need to link database and process forms properly
+3. Fix broken reroute to old username
 
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
@@ -20,10 +22,11 @@ from django.template.loader import render_to_string
 from .forms import SignUpForm
 from .tokens import activation_token
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm
+from .forms import PostForm,AxesCaptchaForm,ProfileForm,UserForm,PasswordForm
 from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
+
 
 
 # Create your views here.
@@ -46,6 +49,7 @@ def post_detail(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
+    print "sentiment: " + str(instance.sentiment)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -56,6 +60,7 @@ def post_detail(request, slug=None):
    # print instance.user_id
     context = {
         "title": instance.title,
+        "sentiment": instance.sentiment,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
@@ -86,6 +91,48 @@ def post_create(request):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
+@login_required
+def settings(request, username=None):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    print user_prof,type(user_prof)
+    print current_user,type(current_user)
+    instance = get_object_or_404(User, username=current_user)
+    instance2 = get_object_or_404(Profile,user=current_user)
+    print instance
+
+    form = UserForm(request.POST or None, instance=instance)
+    form2 = ProfileForm(request.POST or None, instance=instance2)
+    print form2
+
+    form3 = PasswordForm(user=request.user,data=request.POST or None)
+    #print "form3," ,form3
+    context = {
+        'form':form,
+        'form2':form2,
+        'form3':form3
+    }
+    #print request.POST
+    if form3.is_valid():
+        print "IN FORM3 valid"
+    
+    print form2.is_valid(),"form2"
+
+    print form.is_valid(),"form1"
+
+    if not form3.is_valid():
+        print "FORM 3 is not valid"
+        print form3.errors,len(form3.errors)
+    """
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        messages.success(request, "Saved", extra_tags='html_safe')
+        return redirect(reverse("mhap:index", kwargs={"username": current_user}))
+    """
+    return render(request,'settings.html',context)
+
 @login_required
 def post_update(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
@@ -105,6 +152,7 @@ def post_update(request, slug=None):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
 @login_required
 def post_delete(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
