@@ -112,7 +112,6 @@ def evaluate_sentiment(instance):
         r = requests.post('https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment', data = json.dumps(cog_req), headers = header)
         
         sentiment = r.json()['documents'][0]['score'];
-        connection.close()
     except Exception as e:
         print(e)
         
