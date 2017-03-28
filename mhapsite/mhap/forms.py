@@ -28,8 +28,8 @@ class PasswordForm(forms.Form):
         print self.errors
         password_two = self.cleaned_data.get('password2')
         password_one = self.cleaned_data.get('password1')
-        print password_one,"PASSWORD !"
-        print password_one,password_two
+        #print password_one,"PASSWORD !"
+        #print password_one,password_two
         if not password_two:
             raise forms.ValidationError("Must confirm your password")
         if password_one != password_two:

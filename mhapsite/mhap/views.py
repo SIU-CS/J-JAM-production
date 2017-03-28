@@ -112,23 +112,18 @@ def settings(request, username=None):
         'form3':form3
     }
     #print request.POST
-    if form3.is_valid():
-        print "IN FORM3 valid"
-    
-    print form2.is_valid(),"form2"
-
-    print form.is_valid(),"form1"
-
-    if not form3.is_valid():
-        print "FORM 3 is not valid"
-        print form3.errors,len(form3.errors)
-    """
-    if form.is_valid():
-        instance = form.save(commit=False)
-        instance.save()
+    if form3.is_valid() and form2.is_valid() and form.is_valid():
+        print "all forms are valid"
+        u_instance=form.save(commit=False)
+        
+        #messages.success(request, "Saved", extra_tags='html_safe')
+        p_instance=form2.save(commit=False)
+        u_instance.save()
+        p_instance.save()
+        print type(form), u_instance.username
+        print type(form2), p_instance.birth_date
+        print type(form3)
         messages.success(request, "Saved", extra_tags='html_safe')
-        return redirect(reverse("mhap:index", kwargs={"username": current_user}))
-    """
     return render(request,'settings.html',context)
 
 @login_required
