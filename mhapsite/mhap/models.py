@@ -32,7 +32,10 @@ class Profile(models.Model):
         return str(self.user)
 
     def get_absolute_url(self):
-        return reverse("mhap:index", kwargs={"username": self.user})
+        return reverse("mhap:index")
+    
+    def get_list_url(self):
+        return reverse("mhap:list")
 
 
 class Post(models.Model):
@@ -57,9 +60,6 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse("mhap:detail", kwargs={"slug": self.slug})
-
-    def get_list_url(self):
-        return reverse("mhap:list")
 
     class Meta:
         ordering = ["-created", "-updated"]

@@ -170,7 +170,7 @@ def index(request):
     queryset = Post.objects.filter(user_id=user_prof)
     instance = queryset.first()
     context = {
-        "user": current_user,
+        "user_prof": user_prof,
         "instance": instance
     }
     return render(request,'index.html', context)
