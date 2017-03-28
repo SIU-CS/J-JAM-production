@@ -1,8 +1,8 @@
 {% extends "base.html" %} {% block head_title %} {{ instance.title }} | {{ block.super }} {% endblock head_title %} {% block content %}
-<h1>Title:<br/>{{ title }}</h1>
-Content:<br/>{{ instance.content }}<br/><br/>
-Last updated:<br/>{{ instance.updated }}<br/><br/>
-Created:<br/>{{ instance.created }}<br/><br/>
-Secret:<br/>{{instance.secret}} <br/><br/>
-Sentiment:<br/>{{instance.sentiment}} <br/><br/>
+<h1>{{ instance.title }}</h1>
+<p>{{ instance.content }}</p>
+<h6>Created {{ instance.created }}<br/>
+    Last updated {{ instance.updated }}<br/>
+    Sentiment: {{ instance.sentiment }}<br/>
+    Secret: {{ instance.secret }}</h6>
 {% endblock content %}

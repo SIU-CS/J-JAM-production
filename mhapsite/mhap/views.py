@@ -41,7 +41,7 @@ def post_list(request):
     print queryset
     context = {
         "object_list": queryset,
-        "title": "List"
+        "title": "Your Blog"
     }
     return render(request, "post_list.html", context)
 @login_required
@@ -59,8 +59,6 @@ def post_detail(request, slug=None):
     print request.user
    # print instance.user_id
     context = {
-        "title": instance.title,
-        "sentiment": instance.sentiment,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
@@ -169,8 +167,11 @@ def post_delete(request, slug=None):
 def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    queryset = Post.objects.filter(user_id=user_prof)
+    instance = queryset.first()
     context = {
-        "user": current_user
+        "user_prof": user_prof,
+        "instance": instance
     }
     return render(request,'index.html', context)
 
