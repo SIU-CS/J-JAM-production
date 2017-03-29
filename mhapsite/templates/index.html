@@ -1,2 +1,9 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
 <h2>Homepage</h2>
 <p>Hello {{ user }}!</p>
+<p>Here is a graph of your most recent posts' happiness scores:</p>
+{{ happy_graph.as_html }}

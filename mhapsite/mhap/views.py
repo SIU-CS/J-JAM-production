@@ -25,6 +25,9 @@ from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
 
+# for post sentiment graph in homepage view
+from graphos.sources.model import SimpleDataSource
+from graphos.renderers.gchart import LineChart
 
 # Create your views here.
 
@@ -123,8 +126,25 @@ def post_delete(request, slug=None):
 def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    
+    # Generate mental health visual representation (happy graph)
+    sentiment_queryset = Post.objects.user_list(user=user_prof)
+    
+    # TODO pull real sentiment data from queryset!
+    
+    data = [
+           ['Time', 'Happy'],
+           [122, 0.9],
+           [244, 0.3],
+           [366, -9],
+           ]
+    
+    data_source = SimpleDataSource(data=data)
+    happy_graph = LineChart(data_source)
+    
     context = {
-        "user": current_user
+        "user": current_user,
+        "happy_graph": happy_graph
     }
     return render(request,'index.html', context)
 
