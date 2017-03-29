@@ -27,7 +27,8 @@ from axes.utils import reset
 
 # for post sentiment graph in homepage view
 from graphos.sources.model import SimpleDataSource
-from graphos.renderers.gchart import LineChart
+from graphos.renderers.gchart import BarChart
+import datetime, time
 
 # Create your views here.
 
@@ -130,17 +131,20 @@ def index(request):
     # Generate mental health visual representation (happy graph)
     sentiment_queryset = Post.objects.user_list(user=user_prof)
     
-    # TODO pull real sentiment data from queryset!
-    
-    data = [
-           ['Time', 'Happy'],
-           [122, 0.9],
-           [244, 0.3],
-           [366, -9],
-           ]
+    data = [['Posts', 'Happy']]
+    # Start x-axis at time of your very first post
+    if sentiment_queryset:
+        firstdate = time.mktime(sentiment_queryset.earliest(field_name='updated').updated.date().timetuple())
+        for post in reversed(sentiment_queryset):
+            date = post.updated.date()
+            number_date = time.mktime(date.timetuple()) - firstdate
+            data.append([post.title, post.sentiment])
+    else:
+        # default graph for no-posts users
+        data.append([0.0, 0.0])
     
     data_source = SimpleDataSource(data=data)
-    happy_graph = LineChart(data_source)
+    happy_graph = BarChart(data_source)
     
     context = {
         "user": current_user,
