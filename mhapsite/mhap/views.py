@@ -134,10 +134,7 @@ def index(request):
     data = [['Posts', 'Happy']]
     # Start x-axis at time of your very first post
     if sentiment_queryset:
-        firstdate = time.mktime(sentiment_queryset.earliest(field_name='updated').updated.date().timetuple())
         for post in reversed(sentiment_queryset):
-            date = post.updated.date()
-            number_date = time.mktime(date.timetuple()) - firstdate
             data.append([post.title, post.sentiment])
     else:
         # default graph for no-posts users
