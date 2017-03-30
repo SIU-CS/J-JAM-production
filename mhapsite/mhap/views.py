@@ -10,22 +10,25 @@ TODO
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from django.contrib.auth import login,authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from .tokens import activation_token
-from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm,ProfileForm,UserForm,PasswordForm
-from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
+from django.contrib.sites.shortcuts import get_current_site
+from .forms import SignUpForm
+from .tokens import activation_token
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
+from .models import Post, Profile
+
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 
@@ -235,3 +238,23 @@ def locked_out(request):
         form = AxesCaptchaForm()
 
     return render(request,'locked_out.html', dict(form=form))
+
+#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect(reverse("mhap:index"))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', dict(form=form))
+
+
+
+
