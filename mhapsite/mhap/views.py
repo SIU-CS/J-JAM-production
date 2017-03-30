@@ -44,7 +44,7 @@ def post_list(request):
     print queryset
     context = {
         "object_list": queryset,
-        "title": "List"
+        "title": "Your Blog"
     }
     return render(request, "post_list.html", context)
 @login_required
@@ -52,6 +52,7 @@ def post_detail(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
+    print "sentiment: " + str(instance.sentiment)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -61,7 +62,6 @@ def post_detail(request, slug=None):
     print request.user
    # print instance.user_id
     context = {
-        "title": instance.title,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
@@ -165,8 +165,11 @@ def post_delete(request, slug=None):
 def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    queryset = Post.objects.filter(user_id=user_prof)
+    instance = queryset.first()
     context = {
-        "user": current_user
+        "user_prof": user_prof,
+        "instance": instance
     }
     return render(request,'index.html', context)
 
@@ -238,7 +241,7 @@ def locked_out(request):
         form = AxesCaptchaForm()
 
     return render(request,'locked_out.html', dict(form=form))
-
+  
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 def change_password(request):
     if request.method == 'POST':
@@ -254,7 +257,4 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', dict(form=form))
-
-
-
 
