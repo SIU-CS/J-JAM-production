@@ -91,7 +91,7 @@ def post_create(request):
     return render(request, "post_form.html", context)
 
 @login_required
-def settings(request, username=None):
+def settings(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     print user_prof,type(user_prof)
