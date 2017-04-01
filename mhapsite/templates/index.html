@@ -1,22 +1,16 @@
-{% extends "base.html" %}
-{% block head_title %}
-{{ instance.title }} | {{ block.super }}
-{% endblock head_title %}
+{% extends "base.html" %} {% block head_title %} {{ instance.title }} | {{ block.super }} {% endblock head_title %} {% block content %}
 
-{% block content %}
+<h2>Homepage</h2>
+<p>Hello {{ user_prof.user.username }}!</p>
+<p> Quote of the day fam </p>
+<p>{{quote_text}} </p>
+<p> {{quote_author}}</p> {% if instance %}
+<p>Here's your latest post:</p>
 
-    <h2>Homepage</h2>
-    <p>Hello {{ user_prof.user.username }}!</p>
-    {% if instance %}
-        <p>Here's your latest post:</p>
-
-        <h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
-        <p>{{ instance.content }}</p>
-        <h6>Created {{ instance.created }}<br/>
-            Last updated {{ instance.updated }}<br/>
-            Sentiment: {{ instance.sentiment }}<br/>
-            Secret: {{ instance.secret }}</h6>
-    {% endif %}
-    <p><a href='{{ user_prof.get_list_url }}'>Go to your blog page</a></p>
+<h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
+<p>{{ instance.content }}</p>
+<h6>Created {{ instance.created }}<br/> Last updated {{ instance.updated }}<br/> Sentiment: {{ instance.sentiment }}<br/> Secret: {{ instance.secret }}</h6>
+{% endif %}
+<p><a href='{{ user_prof.get_list_url }}'>Go to your blog page</a></p>
 
 {% endblock content %}

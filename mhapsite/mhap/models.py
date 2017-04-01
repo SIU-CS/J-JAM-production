@@ -50,8 +50,6 @@ class Post(models.Model):
     user_id = models.ForeignKey(Profile, null=True)
     objects = PostManager()
 
-    
-    
     def __unicode__(self):
         return self.title
 
@@ -64,7 +62,7 @@ class Post(models.Model):
     class Meta:
         ordering = ["-created", "-updated"]
 
-# Create your models here.
+
 
 @receiver(post_save, sender=User, dispatch_uid='update_user_profile')
 def update_user_profile(sender, instance, created, **kwargs):

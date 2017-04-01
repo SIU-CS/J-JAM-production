@@ -26,6 +26,8 @@ from .tokens import activation_token
 from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
 from .models import Post, Profile
 
+import requests,json
+
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -163,13 +165,25 @@ def post_delete(request, slug=None):
 
 @login_required
 def index(request):
+    API="http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json"
+
+    quote_json=json.loads(requests.get(API).text)
+    #print quote_json
+    quote_text=quote_json['quoteText']
+    quote_author=quote_json['quoteAuthor']
+    print quote_text
+    print quote_author
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     queryset = Post.objects.filter(user_id=user_prof)
     instance = queryset.first()
     context = {
         "user_prof": user_prof,
-        "instance": instance
+        "instance": instance,
+        #first variable is what is referenced in html
+        #second variable is in code
+        "quote_text":quote_text,
+        "quote_author":quote_author
     }
     return render(request,'index.html', context)
 
