@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ title }} works!</h1>
+    <h1>{{ title }}</h1>
     {% for obj in object_list %}
-        Title: <a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a><br/>
-        Content: {{ obj.content }}<br/>
-        Created: {{ obj.created }}<br/>
-        Author: {{ obj.user_id }}<br/>
-        Secret: {{ obj.secret }}<br/>
+        <h3><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a></h3>
+        <p>{{ obj.content }}</p>
+        <h6>Created {{ obj.created }}<br/>
+            Sentiment: {{ obj.sentiment }}<br/>
+            Secret: {{ obj.secret }}</h6>
+        <br/>
     {% endfor %}
 {% endblock content %}

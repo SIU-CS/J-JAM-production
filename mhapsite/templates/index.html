@@ -1,2 +1,22 @@
-<h2>Homepage</h2>
-<p>Hello {{ user }}!</p>
+{% extends "base.html" %}
+{% block head_title %}
+{{ instance.title }} | {{ block.super }}
+{% endblock head_title %}
+
+{% block content %}
+
+    <h2>Homepage</h2>
+    <p>Hello {{ user_prof.user.username }}!</p>
+    {% if instance %}
+        <p>Here's your latest post:</p>
+
+        <h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
+        <p>{{ instance.content }}</p>
+        <h6>Created {{ instance.created }}<br/>
+            Last updated {{ instance.updated }}<br/>
+            Sentiment: {{ instance.sentiment }}<br/>
+            Secret: {{ instance.secret }}</h6>
+    {% endif %}
+    <p><a href='{{ user_prof.get_list_url }}'>Go to your blog page</a></p>
+
+{% endblock content %}
