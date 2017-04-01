@@ -167,8 +167,12 @@ def post_delete(request, slug=None):
 def index(request):
     API="http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json"
 
-    quote_json=json.loads(requests.get(API).text)
+    quote_json=requests.get(API).text
+    quote_json = quote_json.replace('\\x','\\u00')
+    #http://stackoverflow.com/questions/18233091/json-loads-with-escape-characters
+    quote_json = json.loads(quote_json)
     #print quote_json
+
     quote_text=quote_json['quoteText']
     quote_author=quote_json['quoteAuthor']
     print quote_text
