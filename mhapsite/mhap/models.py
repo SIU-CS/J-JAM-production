@@ -27,19 +27,26 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)
     email_confirmed = models.BooleanField(default=False)
     birth_date = models.DateField(null=True, blank=True)
-    
+
     def __str__(self):
         return str(self.user)
 
     def get_absolute_url(self):
         return reverse("mhap:index")
-    
+
     def get_list_url(self):
         return reverse("mhap:list")
 
 
+class Quote(models.Model):
+    quote = models.CharField(max_length=120)
+    author = models.CharField(max_length=120)
+
+    def __str__(self):
+        return str(self.quote) + " " + str(self.author)
+
 class Post(models.Model):
-     
+    
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
     sentiment = models.FloatField(default=0.5)
@@ -50,8 +57,6 @@ class Post(models.Model):
     user_id = models.ForeignKey(Profile, null=True)
     objects = PostManager()
 
-    
-    
     def __unicode__(self):
         return self.title
 
@@ -64,7 +69,7 @@ class Post(models.Model):
     class Meta:
         ordering = ["-created", "-updated"]
 
-# Create your models here.
+
 
 @receiver(post_save, sender=User, dispatch_uid='update_user_profile')
 def update_user_profile(sender, instance, created, **kwargs):

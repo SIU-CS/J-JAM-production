@@ -10,22 +10,27 @@ TODO
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from django.contrib.auth import login,authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from .tokens import activation_token
-from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm,ProfileForm,UserForm,PasswordForm
-from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
+from django.contrib.sites.shortcuts import get_current_site
+from .forms import SignUpForm
+from .tokens import activation_token
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
+from .models import Post, Profile
+
+import requests,json
+
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 
@@ -91,7 +96,7 @@ def post_create(request):
     return render(request, "post_form.html", context)
 
 @login_required
-def settings(request, username=None):
+def settings(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     print user_prof,type(user_prof)
@@ -112,23 +117,18 @@ def settings(request, username=None):
         'form3':form3
     }
     #print request.POST
-    if form3.is_valid():
-        print "IN FORM3 valid"
-    
-    print form2.is_valid(),"form2"
-
-    print form.is_valid(),"form1"
-
-    if not form3.is_valid():
-        print "FORM 3 is not valid"
-        print form3.errors,len(form3.errors)
-    """
-    if form.is_valid():
-        instance = form.save(commit=False)
-        instance.save()
+    if form3.is_valid() and form2.is_valid() and form.is_valid():
+        print "all forms are valid"
+        u_instance=form.save(commit=False)
+        
+        #messages.success(request, "Saved", extra_tags='html_safe')
+        p_instance=form2.save(commit=False)
+        u_instance.save()
+        p_instance.save()
+        print type(form), u_instance.username
+        print type(form2), p_instance.birth_date
+        print type(form3)
         messages.success(request, "Saved", extra_tags='html_safe')
-        return redirect(reverse("mhap:index", kwargs={"username": current_user}))
-    """
     return render(request,'settings.html',context)
 
 @login_required
@@ -165,13 +165,29 @@ def post_delete(request, slug=None):
 
 @login_required
 def index(request):
+    API="http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json"
+
+    quote_json=requests.get(API).text
+    quote_json = quote_json.replace('\\x','\\u00')
+    #http://stackoverflow.com/questions/18233091/json-loads-with-escape-characters
+    quote_json = json.loads(quote_json)
+    #print quote_json
+
+    quote_text=quote_json['quoteText']
+    quote_author=quote_json['quoteAuthor']
+    print quote_text
+    print quote_author
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     queryset = Post.objects.filter(user_id=user_prof)
     instance = queryset.first()
     context = {
         "user_prof": user_prof,
-        "instance": instance
+        "instance": instance,
+        #first variable is what is referenced in html
+        #second variable is in code
+        "quote_text":quote_text,
+        "quote_author":quote_author
     }
     return render(request,'index.html', context)
 
@@ -243,3 +259,20 @@ def locked_out(request):
         form = AxesCaptchaForm()
 
     return render(request,'locked_out.html', dict(form=form))
+  
+#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect(reverse("mhap:index"))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', dict(form=form))
+

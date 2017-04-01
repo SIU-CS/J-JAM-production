@@ -3,7 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from captcha.fields import CaptchaField
 from .models import Post,Profile
+from django.forms.extras.widgets import SelectDateWidget
+BIRTH_YEAR_CHOICES = tuple([str(date) for date in range (1980,2000)])
 
+print BIRTH_YEAR_CHOICES
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -28,8 +31,8 @@ class PasswordForm(forms.Form):
         print self.errors
         password_two = self.cleaned_data.get('password2')
         password_one = self.cleaned_data.get('password1')
-        print password_one,"PASSWORD !"
-        print password_one,password_two
+        #print password_one,"PASSWORD !"
+        #print password_one,password_two
         if not password_two:
             raise forms.ValidationError("Must confirm your password")
         if password_one != password_two:
@@ -48,10 +51,14 @@ class PasswordForm(forms.Form):
         super(PasswordForm, self).__init__(*args, **kwargs)
 
 class ProfileForm(forms.ModelForm):
+
     class Meta:
         model = Profile
         fields = ("birth_date",)
-
+        widgets = {
+            'birth_date':SelectDateWidget(years=BIRTH_YEAR_CHOICES)
+        }
+#http://stackoverflow.com/questions/23692533/django-datefield-object-has-no-attribute-is-hidden
 class UserForm(forms.ModelForm):
     #password1 = forms.PasswordInput()
     #password2=forms.PasswordInput()
