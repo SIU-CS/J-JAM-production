@@ -1,8 +1,16 @@
 {# Load the tag library #} {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
+<html lang="en">
 
+<head>
+    <meta charset="utf-8">
+    <title>My Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+</head>
 <h2>Login</h2>
 <form method="post">
-    {% csrf_token %} {% bootstrap_form form %} {% buttons %}
+    {% csrf_token %} {% bootstrap_form form size="large" %} {% buttons %}
     <button type=" submit " class="btn btn-primary ">
       {% bootstrap_icon "star " %} Submit
     </button> {% endbuttons %}
