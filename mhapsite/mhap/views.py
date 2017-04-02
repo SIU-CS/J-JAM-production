@@ -33,6 +33,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
 
+# for post sentiment graph in homepage view
+from graphos.sources.model import SimpleDataSource
+from graphos.renderers.gchart import BarChart
+import datetime, time
 
 # Create your views here.
 
@@ -179,11 +183,27 @@ def index(request):
     print quote_author
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    
     queryset = Post.objects.filter(user_id=user_prof)
+  
+    # Generate mental health visual representation (happy graph)
+    data = [['Posts', 'Happy']]
+    # Start x-axis at time of your very first post
+    if queryset:
+        for post in reversed(queryset):
+            data.append([post.title, post.sentiment])
+    else:
+        # default graph for no-posts users
+        data.append([0.0, 0.0])
+    
+    data_source = SimpleDataSource(data=data)
+    happy_graph = BarChart(data_source)
+  
     instance = queryset.first()
     context = {
         "user_prof": user_prof,
         "instance": instance,
+        "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
         "quote_text":quote_text,
