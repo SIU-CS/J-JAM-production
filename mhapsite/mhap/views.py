@@ -10,22 +10,28 @@ TODO
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from django.contrib.auth import login,authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from .tokens import activation_token
-from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm,ProfileForm,UserForm
-from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
+from django.contrib.sites.shortcuts import get_current_site
+from .forms import SignUpForm
+from .tokens import activation_token
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
+from .models import Post, Profile,Quote
+
+import requests,json
+
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
 
 
 # Create your views here.
@@ -40,7 +46,7 @@ def post_list(request):
     print queryset
     context = {
         "object_list": queryset,
-        "title": "List"
+        "title": "Your Blog"
     }
     return render(request, "post_list.html", context)
 @login_required
@@ -48,6 +54,7 @@ def post_detail(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
+    print "sentiment: " + str(instance.sentiment)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -57,7 +64,6 @@ def post_detail(request, slug=None):
     print request.user
    # print instance.user_id
     context = {
-        "title": instance.title,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
@@ -90,27 +96,39 @@ def post_create(request):
     return render(request, "post_form.html", context)
 
 @login_required
-def settings(request, username=None):
+def settings(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
-    print user_prof
-    print current_user
+    print user_prof,type(user_prof)
+    print current_user,type(current_user)
     instance = get_object_or_404(User, username=current_user)
-    instance2 = get_object_or_404(Profile,user=request.user)
+    instance2 = get_object_or_404(Profile,user=current_user)
     print instance
 
     form = UserForm(request.POST or None, instance=instance)
     form2 = ProfileForm(request.POST or None, instance=instance2)
     print form2
+
+    form3 = PasswordForm(user=request.user,data=request.POST or None)
+    #print "form3," ,form3
     context = {
         'form':form,
         'form2':form2,
+        'form3':form3
     }
-    if form.is_valid():
-        instance = form.save(commit=False)
-        instance.save()
+    #print request.POST
+    if form3.is_valid() and form2.is_valid() and form.is_valid():
+        print "all forms are valid"
+        u_instance=form.save(commit=False)
+        
+        #messages.success(request, "Saved", extra_tags='html_safe')
+        p_instance=form2.save(commit=False)
+        u_instance.save()
+        p_instance.save()
+        print type(form), u_instance.username
+        print type(form2), p_instance.birth_date
+        print type(form3)
         messages.success(request, "Saved", extra_tags='html_safe')
-        return redirect(reverse("mhap:index", kwargs={"username": current_user}))
     return render(request,'settings.html',context)
 
 @login_required
@@ -132,6 +150,7 @@ def post_update(request, slug=None):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
 @login_required
 def post_delete(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
@@ -148,8 +167,17 @@ def post_delete(request, slug=None):
 def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    queryset = Post.objects.filter(user_id=user_prof)
+    instance = queryset.first()
+
+    second_quote = Quote.objects.get(id=2)
     context = {
-        "user": current_user
+        "user_prof": user_prof,
+        "instance": instance,
+        #first variable is what is referenced in html
+        #second variable is in code
+        "quote_text":second_quote.quote,
+        "quote_author":second_quote.author
     }
     return render(request,'index.html', context)
 
@@ -221,3 +249,20 @@ def locked_out(request):
         form = AxesCaptchaForm()
 
     return render(request,'locked_out.html', dict(form=form))
+  
+#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect(reverse("mhap:index"))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', dict(form=form))
+
