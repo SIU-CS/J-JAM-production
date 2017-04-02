@@ -1,10 +1,20 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
 {% extends "base.html" %} {% block head_title %} {{ instance.title }} | {{ block.super }} {% endblock head_title %} {% block content %}
 
 <h2>Homepage</h2>
 <p>Hello {{ user_prof.user.username }}!</p>
 <p> Quote of the day fam </p>
 <p>{{quote_text}} </p>
-<p> {{quote_author}}</p> {% if instance %}
+<p> {{quote_author}}</p>
+
+{% if instance %}
+<p>Here is a graph of your most recent posts' happiness scores:</p>
+{{ happy_graph.as_html }}
+
 <p>Here's your latest post:</p>
 
 <h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
