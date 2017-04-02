@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'mhap',
     'axes',
     'captcha',
+    'graphos',
 ]
 
 MIDDLEWARE = [
