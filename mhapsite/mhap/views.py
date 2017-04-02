@@ -1,6 +1,8 @@
 '''
 TODO
-1. Settings page with username,birthdate change and password change
+1. Settings page with password change
+2. Need to link database and process forms properly
+3. Fix broken reroute to old username
 
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
@@ -8,22 +10,28 @@ TODO
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from django.contrib.auth import login,authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from .tokens import activation_token
-from django.contrib.sites.shortcuts import get_current_site
-from .forms import PostForm,AxesCaptchaForm
-from .models import Post,Profile
 from django.contrib.auth.models import User
 from axes.utils import reset
+from django.contrib.sites.shortcuts import get_current_site
+from .forms import SignUpForm
+from .tokens import activation_token
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
+from .models import Post, Profile
+
+import requests,json
+
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
 
 # for post sentiment graph in homepage view
 from graphos.sources.model import SimpleDataSource
@@ -42,7 +50,7 @@ def post_list(request):
     print queryset
     context = {
         "object_list": queryset,
-        "title": "List"
+        "title": "Your Blog"
     }
     return render(request, "post_list.html", context)
 @login_required
@@ -60,8 +68,6 @@ def post_detail(request, slug=None):
     print request.user
    # print instance.user_id
     context = {
-        "title": instance.title,
-        "sentiment": instance.sentiment,
         "instance": instance,
     }
     return render(request, "post_detail.html", context)
@@ -92,6 +98,43 @@ def post_create(request):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
+@login_required
+def settings(request):
+    user_prof = Profile.objects.get(user=request.user)
+    current_user = user_prof.user
+    print user_prof,type(user_prof)
+    print current_user,type(current_user)
+    instance = get_object_or_404(User, username=current_user)
+    instance2 = get_object_or_404(Profile,user=current_user)
+    print instance
+
+    form = UserForm(request.POST or None, instance=instance)
+    form2 = ProfileForm(request.POST or None, instance=instance2)
+    print form2
+
+    form3 = PasswordForm(user=request.user,data=request.POST or None)
+    #print "form3," ,form3
+    context = {
+        'form':form,
+        'form2':form2,
+        'form3':form3
+    }
+    #print request.POST
+    if form3.is_valid() and form2.is_valid() and form.is_valid():
+        print "all forms are valid"
+        u_instance=form.save(commit=False)
+        
+        #messages.success(request, "Saved", extra_tags='html_safe')
+        p_instance=form2.save(commit=False)
+        u_instance.save()
+        p_instance.save()
+        print type(form), u_instance.username
+        print type(form2), p_instance.birth_date
+        print type(form3)
+        messages.success(request, "Saved", extra_tags='html_safe')
+    return render(request,'settings.html',context)
+
 @login_required
 def post_update(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
@@ -111,6 +154,7 @@ def post_update(request, slug=None):
         "form": form,
     }
     return render(request, "post_form.html", context)
+
 @login_required
 def post_delete(request, slug=None):
     user_prof = Profile.objects.get(user=request.user)
@@ -125,16 +169,28 @@ def post_delete(request, slug=None):
 
 @login_required
 def index(request):
+    API="http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json"
+
+    quote_json=requests.get(API).text
+    quote_json = quote_json.replace('\\x','\\u00')
+    #http://stackoverflow.com/questions/18233091/json-loads-with-escape-characters
+    quote_json = json.loads(quote_json)
+    #print quote_json
+
+    quote_text=quote_json['quoteText']
+    quote_author=quote_json['quoteAuthor']
+    print quote_text
+    print quote_author
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     
+    queryset = Post.objects.filter(user_id=user_prof)
+  
     # Generate mental health visual representation (happy graph)
-    sentiment_queryset = Post.objects.user_list(user=user_prof)
-    
     data = [['Posts', 'Happy']]
     # Start x-axis at time of your very first post
-    if sentiment_queryset:
-        for post in reversed(sentiment_queryset):
+    if queryset:
+        for post in reversed(queryset):
             data.append([post.title, post.sentiment])
     else:
         # default graph for no-posts users
@@ -142,10 +198,16 @@ def index(request):
     
     data_source = SimpleDataSource(data=data)
     happy_graph = BarChart(data_source)
-    
+  
+    instance = queryset.first()
     context = {
-        "user": current_user,
+        "user_prof": user_prof,
+        "instance": instance,
         "happy_graph": happy_graph
+        #first variable is what is referenced in html
+        #second variable is in code
+        "quote_text":quote_text,
+        "quote_author":quote_author
     }
     return render(request,'index.html', context)
 
@@ -217,3 +279,20 @@ def locked_out(request):
         form = AxesCaptchaForm()
 
     return render(request,'locked_out.html', dict(form=form))
+  
+#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect(reverse("mhap:index"))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', dict(form=form))
+
