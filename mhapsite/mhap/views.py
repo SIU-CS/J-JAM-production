@@ -197,7 +197,16 @@ def index(request):
         data.append([0.0, 0.0])
     
     data_source = SimpleDataSource(data=data)
-    happy_graph = BarChart(data_source)
+    
+    options = {
+              'title': 'Mental Health Visual Representation',
+              'hAxis': {
+                       'minValue': 0,
+                       'maxValue': 1
+                       }
+              }
+    
+    happy_graph = BarChart(data_source, options=options)
   
     instance = queryset.first()
     context = {
