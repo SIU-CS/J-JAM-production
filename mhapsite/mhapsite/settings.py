@@ -31,7 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
+    'bootstrap3',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -199,4 +201,10 @@ AXES_LOCKOUT_URL = '/locked'
 AXES_USERNAME_FORM_FIELD = 'email'
 
 NOCAPTCHA = True
+#https://crontab.guru/every-minute
+CRONJOBS = [
+    ('* * * * *', 'mhap.cron.update_quote','>> /home/ayush/J-JAM/J-JAM-production_new/J-JAM-production.log'),
+]
 
+
+CRONTAB_COMMAND_SUFFIX = '2>&1'

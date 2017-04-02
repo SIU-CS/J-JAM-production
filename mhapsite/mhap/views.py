@@ -24,7 +24,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from .forms import SignUpForm
 from .tokens import activation_token
 from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
-from .models import Post, Profile
+from .models import Post, Profile,Quote
 
 import requests,json
 
@@ -169,18 +169,6 @@ def post_delete(request, slug=None):
 
 @login_required
 def index(request):
-    API="http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json"
-
-    quote_json=requests.get(API).text
-    quote_json = quote_json.replace('\\x','\\u00')
-    #http://stackoverflow.com/questions/18233091/json-loads-with-escape-characters
-    quote_json = json.loads(quote_json)
-    #print quote_json
-
-    quote_text=quote_json['quoteText']
-    quote_author=quote_json['quoteAuthor']
-    print quote_text
-    print quote_author
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
     
@@ -209,14 +197,16 @@ def index(request):
     happy_graph = BarChart(data_source, options=options)
   
     instance = queryset.first()
+
+    second_quote = Quote.objects.get(id=2)
     context = {
         "user_prof": user_prof,
         "instance": instance,
         "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
-        "quote_text":quote_text,
-        "quote_author":quote_author
+        "quote_text":second_quote.quote,
+        "quote_author":second_quote.author
     }
     return render(request,'index.html', context)
 
