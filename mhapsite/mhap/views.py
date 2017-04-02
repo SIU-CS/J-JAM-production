@@ -203,7 +203,7 @@ def index(request):
     context = {
         "user_prof": user_prof,
         "instance": instance,
-        "happy_graph": happy_graph
+        "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
         "quote_text":quote_text,
