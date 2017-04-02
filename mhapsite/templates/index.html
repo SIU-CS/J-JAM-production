@@ -11,10 +11,10 @@
 <p>{{quote_text}} </p>
 <p> {{quote_author}}</p>
 
+{% if instance %}
 <p>Here is a graph of your most recent posts' happiness scores:</p>
 {{ happy_graph.as_html }}
 
-{% if instance %}
 <p>Here's your latest post:</p>
 
 <h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
