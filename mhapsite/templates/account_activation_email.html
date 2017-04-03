@@ -1,7 +1,2 @@
-{% autoescape off %}
-Hi {{ user.username }},
-
-Please click on the link below to confirm your registration:
-
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
-{% endautoescape %}
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %} {% include 'navbar.html' %} ' {% autoescape off %} Hi {{ user.username
+}} , Please click on the link below to confirm your registration: http://{{ domain }}{% url 'activate' uidb64=uid token=token %} {% endautoescape %}

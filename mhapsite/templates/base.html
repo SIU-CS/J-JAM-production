@@ -1,25 +1,30 @@
 <!--DOCTYPE html -->
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
+
 <html>
+
 <head>
+    {% include 'head.html' %}
     <title>
-        {% block head_title %}
-            J-JAM
-        {% endblock head_title %}
+        {% block head_title %} J-JAM {% endblock head_title %}
     </title>
-
     <style>
-        {% block style %}
-
-        {% endblock style %}
+        {
+            % block style %
+        }
+        
+        {
+            % endblock style %
+        }
     </style>
 </head>
+{% include 'navbar.html' %}
 
 <body>
-    {% include "messages_display.html" %}
-    <div class='container'>
-        {% block content %}
 
-        {% endblock content %}
+    <div class='container'>
+        {% block content %} {% endblock content %}
     </div>
 </body>
+
 </html>

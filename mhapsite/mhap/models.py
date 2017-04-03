@@ -66,6 +66,9 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse("mhap:detail", kwargs={"slug": self.slug})
 
+    def get_list_url(self):
+        return reverse("mhap:list")
+
     class Meta:
         ordering = ["-created", "-updated"]
 
