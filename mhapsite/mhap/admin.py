@@ -1,3 +1,7 @@
+"""
+Module for admin.py importing libraries and registering what we want to be shwon in admin site
+"""
+
 from django.contrib import admin
 
 # Register your models here.
