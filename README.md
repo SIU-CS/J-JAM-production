@@ -1,5 +1,5 @@
 # J-JAM-production
-An AI infused personall blogging web app for users to write about their mental health.
+An AI infused personal blogging web app for users to write about their mental health.
 
 
 ## Members
