@@ -301,6 +301,7 @@ def bot_page(request):
     form = ChatForm(request.POST or None)
     context = {
         "form" : form,
+        "data" : "WELCOME"
     }
 
     if form.is_valid():
