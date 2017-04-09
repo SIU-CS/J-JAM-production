@@ -17,8 +17,8 @@ MSFT_COGSERV_KEY = os.environ.get('MSFT_COGSERV_KEY')
 
 # for keyword searches for important topics
 import re
-depression_patterns = re.compile(r'(depression)|(depressed)|(hopeless)|(worthless)')
-suicide_patterns = re.compile(r'(suicid)|(depressed)|(hopeless)|(worthless)')
+depression_patterns = re.compile(r'(depression)|(depressed)|(hopeless)|(worthless)', flags=re.I)
+suicide_patterns = re.compile(r'(suicid)|(kill me)|(kill myself)|(I was dead)', flags=re.I)
 
 # Create your models here.
 
