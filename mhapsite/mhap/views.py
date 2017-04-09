@@ -10,7 +10,7 @@ TODO
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -295,3 +295,6 @@ def change_password(request):
 
     return render(request, 'change_password.html', dict(form=form))
 
+
+def bot_page(request):
+    return HttpResponse("Welcome to the bot page dawg")
