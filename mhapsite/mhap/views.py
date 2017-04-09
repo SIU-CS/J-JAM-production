@@ -59,6 +59,8 @@ def post_detail(request, slug=None):
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
     print "sentiment: " + str(instance.sentiment)
+    print "seems depressed: " + str(instance.seems_depressed)
+    print "seems suicidal: " + str(instance.seems_suicidal)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)

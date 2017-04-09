@@ -15,6 +15,10 @@ from django.dispatch import receiver
 import requests, json, os
 MSFT_COGSERV_KEY = os.environ.get('MSFT_COGSERV_KEY')
 
+# for keyword searches for important topics
+depression_red_flags = ['depression', 'depressed', 'hopeless', 'worthless']
+suicide_red_flags = ['suicid', 'kill me', 'kill myself', 'I was dead']
+
 # Create your models here.
 
 class PostManager(models.Manager):
@@ -50,6 +54,8 @@ class Post(models.Model):
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
     sentiment = models.FloatField(default=0.5)
+    seems_depressed = models.BooleanField(default=False)
+    seems_suicidal = models.BooleanField(default=False)
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -124,9 +130,14 @@ def evaluate_sentiment(instance):
         print(e)
         
     return sentiment
+    
+def contains_red_flags(instance, red_flags):
+    return any(x in str(instance.title) + ". " + str(instance.content) for x in red_flags)
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     instance.slug = create_slug(instance)
     instance.sentiment = evaluate_sentiment(instance)
+    instance.seems_depressed = contains_red_flags(instance, depression_red_flags)
+    instance.seems_suicidal = contains_red_flags(instance, suicide_red_flags)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
