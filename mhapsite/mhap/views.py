@@ -68,6 +68,11 @@ def post_detail(request, slug=None):
         raise Http404
     print instance 
     print request.user
+    
+    if instance.seems_suicidal:
+        messages.info(request, "Please don't kill yourself.")
+    if instance.seems_depressed:
+        messages.info(request, "Would you like some depression resources?")
    # print instance.user_id
     context = {
         "instance": instance,
@@ -95,6 +100,7 @@ def post_create(request):
         instance.save()
         print instance.refresh_from_db()
         messages.success(request, "Successfully Created")
+        print "succesffuly created"
         return HttpResponseRedirect(instance.get_absolute_url())
     context = {
         "form": form,
