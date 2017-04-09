@@ -73,6 +73,8 @@ def post_detail(request, slug=None):
         messages.info(request, "Please don't kill yourself.")
     if instance.seems_depressed:
         messages.info(request, "Would you like some depression resources?")
+    if instance.sentiment < 0.3:
+        messages.info(request, "I\'m sorry you're having a bad day.")
    # print instance.user_id
     context = {
         "instance": instance,
