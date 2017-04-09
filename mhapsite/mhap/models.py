@@ -15,6 +15,11 @@ from django.dispatch import receiver
 import requests, json, os
 MSFT_COGSERV_KEY = os.environ.get('MSFT_COGSERV_KEY')
 
+# for keyword searches for important topics
+import re
+depression_patterns = re.compile(r'(depression)|(depressed)|(hopeless)|(worthless)', flags=re.I)
+suicide_patterns = re.compile(r'(suicid)|(kill me)|(kill myself)|(I was dead)', flags=re.I)
+
 # Create your models here.
 
 class PostManager(models.Manager):
@@ -50,6 +55,8 @@ class Post(models.Model):
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
     sentiment = models.FloatField(default=0.5)
+    seems_depressed = models.BooleanField(default=False)
+    seems_suicidal = models.BooleanField(default=False)
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -124,9 +131,17 @@ def evaluate_sentiment(instance):
         print(e)
         
     return sentiment
+    
+def contains_patterns(instance, patterns):
+    if(patterns.search(str(instance.title) + ". " + str(instance.content))):
+        return True
+    else:
+        return False
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     instance.slug = create_slug(instance)
     instance.sentiment = evaluate_sentiment(instance)
+    instance.seems_depressed = contains_patterns(instance, depression_patterns)
+    instance.seems_suicidal = contains_patterns(instance, suicide_patterns)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
