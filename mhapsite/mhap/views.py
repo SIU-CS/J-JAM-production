@@ -59,6 +59,8 @@ def post_detail(request, slug=None):
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
     print "sentiment: " + str(instance.sentiment)
+    print "seems depressed: " + str(instance.seems_depressed)
+    print "seems suicidal: " + str(instance.seems_suicidal)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -66,6 +68,13 @@ def post_detail(request, slug=None):
         raise Http404
     print instance 
     print request.user
+    
+    if instance.seems_suicidal:
+        messages.info(request, "Suicide is not the answer.")
+    if instance.seems_depressed:
+        messages.info(request, "Would you like some depression resources?")
+    if instance.sentiment < 0.3:
+        messages.info(request, "I\'m sorry you're having a bad day.")
    # print instance.user_id
     context = {
         "instance": instance,
@@ -93,6 +102,7 @@ def post_create(request):
         instance.save()
         print instance.refresh_from_db()
         messages.success(request, "Successfully Created")
+        print "succesffuly created"
         return HttpResponseRedirect(instance.get_absolute_url())
     context = {
         "form": form,
