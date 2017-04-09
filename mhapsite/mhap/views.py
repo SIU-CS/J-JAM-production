@@ -70,7 +70,7 @@ def post_detail(request, slug=None):
     print request.user
     
     if instance.seems_suicidal:
-        messages.info(request, "Please don't kill yourself.")
+        messages.info(request, "Suicide is not the answer.")
     if instance.seems_depressed:
         messages.info(request, "Would you like some depression resources?")
     if instance.sentiment < 0.3:
