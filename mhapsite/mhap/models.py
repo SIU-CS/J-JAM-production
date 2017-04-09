@@ -51,7 +51,7 @@ class Quote(models.Model):
         return str(self.quote) + " " + str(self.author)
 
 class Post(models.Model):
-    
+
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
     sentiment = models.FloatField(default=0.5)
