@@ -16,8 +16,9 @@ import requests, json, os
 MSFT_COGSERV_KEY = os.environ.get('MSFT_COGSERV_KEY')
 
 # for keyword searches for important topics
-depression_red_flags = ['depression', 'depressed', 'hopeless', 'worthless']
-suicide_red_flags = ['suicid', 'kill me', 'kill myself', 'I was dead']
+import re
+depression_patterns = re.compile(r'(depression)|(depressed)|(hopeless)|(worthless)')
+suicide_patterns = re.compile(r'(suicid)|(depressed)|(hopeless)|(worthless)')
 
 # Create your models here.
 
@@ -131,13 +132,16 @@ def evaluate_sentiment(instance):
         
     return sentiment
     
-def contains_red_flags(instance, red_flags):
-    return any(x in str(instance.title) + ". " + str(instance.content) for x in red_flags)
+def contains_patterns(instance, patterns):
+    if(patterns.search(str(instance.title) + ". " + str(instance.content))):
+        return True
+    else:
+        return False
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     instance.slug = create_slug(instance)
     instance.sentiment = evaluate_sentiment(instance)
-    instance.seems_depressed = contains_red_flags(instance, depression_red_flags)
-    instance.seems_suicidal = contains_red_flags(instance, suicide_red_flags)
+    instance.seems_depressed = contains_patterns(instance, depression_patterns)
+    instance.seems_suicidal = contains_patterns(instance, suicide_patterns)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
