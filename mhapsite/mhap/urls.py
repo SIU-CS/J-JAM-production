@@ -9,7 +9,7 @@ from django.conf.urls import url
 
 from . import views
 
-URLPATTERNS = [
+urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^list/$', views.post_list, name="list"),
     url(r'^create/$', views.post_create),

@@ -23,7 +23,7 @@ from axes.utils import reset
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import SignUpForm
 from .tokens import activation_token
-from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm, ChatForm
 from .models import Post, Profile,Quote
 
 import requests,json
@@ -277,12 +277,12 @@ def locked_out(request):
     else:
         form = AxesCaptchaForm()
 
-    return render(request,'locked_out.html', dict(form=form))
-  
+    return render(request, 'locked_out.html', dict(form=form))
+
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user,request.POST)
+        form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
@@ -297,4 +297,19 @@ def change_password(request):
 
 
 def bot_page(request):
-    return HttpResponse("Welcome to the bot page dawg")
+    #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
+    form = ChatForm(request.POST or None)
+    context = {
+        "form" : form,
+    }
+
+    if form.is_valid():
+        print form.cleaned_data
+        info = form.cleaned_data['chat']
+        print info
+        context = {
+            "form" : form,
+            "data" : info
+        }
+        #print context
+    return render(request, 'bot.html', context)
