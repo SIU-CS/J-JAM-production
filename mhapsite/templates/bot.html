@@ -1,0 +1,9 @@
+<h4> Welcome to the bot page </h4>
+
+<h4> {{data}}
+    <h4>
+
+        <form method="post">
+            {% csrf_token %} {{ form }}
+            <button type="submit">Save changes</button>
+        </form>

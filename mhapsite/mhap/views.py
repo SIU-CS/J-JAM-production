@@ -298,16 +298,20 @@ def change_password(request):
 
 def bot_page(request):
     #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
+    #http://tst07.pythonanywhere.com/post/3/
+    info = None
     form = ChatForm(request.POST or None)
     context = {
         "form" : form,
-        "data" : "WELCOME"
+        #"data" : "WELCOME"
     }
 
     if form.is_valid():
         print form.cleaned_data
         info = form.cleaned_data['chat']
         print info
+        if 'a' in info:
+            info+="\n Info has a dawg"
         context = {
             "form" : form,
             "data" : info
