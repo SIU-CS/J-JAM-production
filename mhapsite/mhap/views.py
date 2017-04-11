@@ -204,16 +204,20 @@ def index(request):
     happy_graph = BarChart(data_source, options=options)
   
     instance = queryset.first()
-
-    second_quote = Quote.objects.get(id=2)
+    quote=None
+    try:
+        second_quote = Quote.objects.get(id=2)
+    except Exception as e:
+        print e
+   
     context = {
         "user_prof": user_prof,
         "instance": instance,
         "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
-        "quote_text":second_quote.quote,
-        "quote_author":second_quote.author
+        "quote_text":"second_quote.text",
+        "quote_author":"second_quote.author"
     }
     return render(request,'index.html', context)
 
@@ -313,10 +317,13 @@ def bot_page(request):
         #"data" : "WELCOME"
     }
 
+    #IF user is posted data
     if form.is_valid():
         print form.cleaned_data
         info = form.cleaned_data['chat']
-        new_message = ChatMessages.objects.create()
+        user_prof = Profile.objects.get(user=request.user)
+        new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
+        print new_message,"NEW MESSGE"
         print info
         context = {
             "form" : form,
