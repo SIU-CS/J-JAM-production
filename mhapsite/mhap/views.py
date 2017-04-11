@@ -327,7 +327,7 @@ def bot_page(request):
         print info
         context = {
             "form" : form,
-            "data" : info
+            "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
         }
         #print context
     return render(request, 'bot.html', context)
