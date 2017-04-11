@@ -49,7 +49,7 @@ class ChatMessages(models.Model):
     is_user = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.user_id) + " " + self.message
+        return str(self.user_id) + " " + self.message + str(self.is_user)
 
 
 class Quote(models.Model):
