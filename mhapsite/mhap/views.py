@@ -1,10 +1,7 @@
 '''
-TODO
-1. Settings page with password change
-2. Need to link database and process forms properly
-3. Fix broken reroute to old username
+This contains all the logic for how views are handled.
+It bridges our Models and Templates.
 
-#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
 '''
 
@@ -319,7 +316,7 @@ def bot_page(request):
     if form.is_valid():
         print form.cleaned_data
         info = form.cleaned_data['chat']
-
+        new_message = ChatMessages.objects.create()
         print info
         context = {
             "form" : form,
