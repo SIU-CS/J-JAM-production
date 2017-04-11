@@ -42,11 +42,17 @@ class Profile(models.Model):
     def get_list_url(self):
         return reverse("mhap:list")
 
-
+#http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add
 class ChatMessages(models.Model):
     message = models.CharField(max_length=255)
     user_id = models.ForeignKey(Profile)
     is_user = models.BooleanField(default=True)
+    time_stamp = models.DateTimeField(default=None, editable=False,null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        return super(ChatMessages,self).save(*args,**kwargs)
 
     def __str__(self):
         return str(self.user_id) + " " + self.message + str(self.is_user)
