@@ -314,7 +314,7 @@ def bot_page(request):
     form = ChatForm(request.POST or None)
     context = {
         "form" : form,
-        #"data" : "WELCOME"
+        "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
     }
 
     #IF user is posted data
