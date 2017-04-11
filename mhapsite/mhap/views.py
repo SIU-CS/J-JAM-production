@@ -24,7 +24,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from .forms import SignUpForm
 from .tokens import activation_token
 from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm, ChatForm
-from .models import Post, Profile,Quote
+from .models import Post, Profile,Quote,ChatMessages
 
 import requests,json
 
@@ -319,9 +319,8 @@ def bot_page(request):
     if form.is_valid():
         print form.cleaned_data
         info = form.cleaned_data['chat']
+
         print info
-        if 'a' in info:
-            info+="\n Info has a dawg"
         context = {
             "form" : form,
             "data" : info
