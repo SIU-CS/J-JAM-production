@@ -43,6 +43,15 @@ class Profile(models.Model):
         return reverse("mhap:list")
 
 
+class ChatMessages(models.Model):
+    message = models.CharField(max_length=255)
+    user_id = models.ForeignKey(Profile)
+    is_user = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.user_id) + " " + self.message
+
+
 class Quote(models.Model):
     quote = models.CharField(max_length=120)
     author = models.CharField(max_length=120)
