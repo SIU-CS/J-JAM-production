@@ -132,7 +132,7 @@ def evaluate_sentiment(instance):
                 "text": str(instance.title) + ". " + str(instance.content)
             }
         ]
-    };
+    }
     
     try:
         header = {
