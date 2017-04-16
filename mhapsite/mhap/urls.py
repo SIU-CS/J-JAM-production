@@ -1,3 +1,10 @@
+"""
+Contains mhap specific urls
+first paramemter is the url,
+second is the url in views
+third is url name to easily reference in views
+"""
+
 from django.conf.urls import url
 
 from . import views
@@ -11,4 +18,5 @@ urlpatterns = [
     url(r'^list/(?P<slug>[\w-]+)/delete/$', views.post_delete),
     url(r'^settings/$', views.settings),
     url(r'^settings/password/$', views.change_password, name='change_password'),
+    url(r'^bot/$', views.bot_page, name='bot_page'),
 ]
