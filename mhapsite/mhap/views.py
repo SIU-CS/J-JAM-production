@@ -28,6 +28,7 @@ import requests,json
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils.timezone import utc
 
 
 # for post sentiment graph in homepage view
@@ -204,6 +205,11 @@ def index(request):
     happy_graph = BarChart(data_source, options=options)
   
     instance = queryset.first()
+    if instance:
+        current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        difference = current_time - instance.updated
+        if difference.days >= 1:
+            messages.info(request, "You haven't posted in awhile, how have you been?")
     quote=None
     try:
         second_quote = Quote.objects.get(id=2)
