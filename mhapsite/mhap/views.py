@@ -322,6 +322,7 @@ def bot_page(request):
         print form.cleaned_data
         info = form.cleaned_data['chat']
         user_prof = Profile.objects.get(user=request.user)
+        print info
         new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
         print new_message,"NEW MESSGE"
         print info
@@ -331,3 +332,4 @@ def bot_page(request):
         }
         #print context
     return render(request, 'bot.html', context)
+
