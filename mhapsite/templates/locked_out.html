@@ -1,3 +1,4 @@
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %} {% include 'navbar.html' %}
 <form action="" method="post">
     {% csrf_token %} {{ form.captcha.errors }} {{ form.captcha }}
 

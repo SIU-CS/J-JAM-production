@@ -1,25 +1,27 @@
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %}
 
 <html lang="en">
+
 <head>
-  <title>Bootstrap Case</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>NAVBAR</title>
+    <meta charset="utf-8">
+
 </head>
+
 <body>
-    
-<nav class = "navbar navbar-default">
-    <div class = "container-fluid">
-        <div class = "navbar-header">
-            <a class = "navbar-brand" href = "#">MHAP</a>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">MHAP</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="http://127.0.0.1:8000/mhap">Home</a></li>
+                <li><a href="http://127.0.0.1:8000/login">Login</a></li>
+                <li><a href="http://127.0.0.1:8000/mhap/create">Create</a></li>
+                <li><a href="http://127.0.0.1:8000/mhap/list">Blog</a></li>
+                <li><a href="http://127.0.0.1:8000/mhap/settings/">Settings</a></li>
+                <li><a href="http://127.0.0.1:8000/mhap/settings/password">Password</a></li>
+            </ul>
         </div>
-<ul class = "nav navbar-nav">
-<li><a href="http://127.0.0.1:8000/mhap">Home</a></li>
-<li><a href="http://127.0.0.1:8000/login">Login</a></li>
-<li><a href="http://127.0.0.1:8000/mhap/create">Post</a></li>
-<li><a href="http://127.0.0.1:8000/mhap/list">Blog</a></li>
-</ul>
-    </div>
-</nav>
+    </nav>

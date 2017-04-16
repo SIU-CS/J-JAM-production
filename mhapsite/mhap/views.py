@@ -33,6 +33,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
 
+# for post sentiment graph in homepage view
+from graphos.sources.model import SimpleDataSource
+from graphos.renderers.gchart import BarChart
+import datetime, time
 
 # Create your views here.
 
@@ -55,6 +59,8 @@ def post_detail(request, slug=None):
     current_user = user_prof.user
     instance = get_object_or_404(Post, slug=slug)
     print "sentiment: " + str(instance.sentiment)
+    print "seems depressed: " + str(instance.seems_depressed)
+    print "seems suicidal: " + str(instance.seems_suicidal)
     print "secret: " + str(instance.secret)
     print "current user: " + str(user_prof)
     print "blog user: " + str(instance.user_id)
@@ -62,6 +68,13 @@ def post_detail(request, slug=None):
         raise Http404
     print instance 
     print request.user
+    
+    if instance.seems_suicidal:
+        messages.info(request, "Suicide is not the answer.")
+    if instance.seems_depressed:
+        messages.info(request, "Would you like some depression resources?")
+    if instance.sentiment < 0.3:
+        messages.info(request, "I\'m sorry you're having a bad day.")
    # print instance.user_id
     context = {
         "instance": instance,
@@ -89,6 +102,7 @@ def post_create(request):
         instance.save()
         print instance.refresh_from_db()
         messages.success(request, "Successfully Created")
+        print "succesffuly created"
         return HttpResponseRedirect(instance.get_absolute_url())
     context = {
         "form": form,
@@ -167,13 +181,38 @@ def post_delete(request, slug=None):
 def index(request):
     user_prof = Profile.objects.get(user=request.user)
     current_user = user_prof.user
+    
     queryset = Post.objects.filter(user_id=user_prof)
+  
+    # Generate mental health visual representation (happy graph)
+    data = [['Posts', 'Happy']]
+    # Start x-axis at time of your very first post
+    if queryset:
+        for post in reversed(queryset):
+            data.append([post.title, post.sentiment])
+    else:
+        # default graph for no-posts users
+        data.append([0.0, 0.0])
+    
+    data_source = SimpleDataSource(data=data)
+    
+    options = {
+              'title': 'Mental Health Visual Representation',
+              'hAxis': {
+                       'minValue': 0,
+                       'maxValue': 1
+                       }
+              }
+    
+    happy_graph = BarChart(data_source, options=options)
+  
     instance = queryset.first()
 
     second_quote = Quote.objects.get(id=2)
     context = {
         "user_prof": user_prof,
         "instance": instance,
+        "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
         "quote_text":second_quote.quote,

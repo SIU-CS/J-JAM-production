@@ -1,5 +1,6 @@
+{# Load the tag library #} {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %} {% include 'navbar.html' %}
 <h1>Settings</h1>
-<form method='POST' action=''>
+<form method="post" class="form">
     {% csrf_token %} {{ form.as_p }} {{form2.as_p}} {{form3.as_p}}
     <input type='submit' value='Settings page' />
 </form>

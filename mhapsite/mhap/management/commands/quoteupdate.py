@@ -34,4 +34,3 @@ class Command(BaseCommand):
             raise CommandError("OOPS : {}".format(e))
 
 
-

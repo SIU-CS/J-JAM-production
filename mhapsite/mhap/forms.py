@@ -1,12 +1,19 @@
+"""
+Contains imports of forms from django and captha and our custom models.
+Has logic for form validation as well.
+"""
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from captcha.fields import CaptchaField
-from .models import Post,Profile
 from django.forms.extras.widgets import SelectDateWidget
-BIRTH_YEAR_CHOICES = tuple([str(date) for date in range (1980,2000)])
+from captcha.fields import CaptchaField
+from .models import Post, Profile
 
-print BIRTH_YEAR_CHOICES
+BIRTH_YEAR_CHOICES = tuple([str(date) for date in range (1980, 2000)])
+
+#print BIRTH_YEAR_CHOICES
+
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -21,6 +28,13 @@ class PostForm(forms.ModelForm):
 #http://stackoverflow.com/questions/28458770/how-can-create-a-model-form-in-django-with-a-one-to-one-relation-with-another-mo
 #http://stackoverflow.com/questions/11923317/creating-django-forms
 class PasswordForm(forms.Form):
+    """
+        Extends forms.Form and is essentially a password form we use for inputting password twice
+
+
+
+    """
+
     password1 = forms.CharField(label=("Password"), widget=forms.PasswordInput)
     password2 = forms.CharField(label=("Password (again)"), widget=forms.PasswordInput)
 
@@ -45,7 +59,7 @@ class PasswordForm(forms.Form):
         return valid
 
 
-    def __init__(self,user=None,*args,**kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         self.user = user
         print self.user, "IN INIT"
         super(PasswordForm, self).__init__(*args, **kwargs)
@@ -94,3 +108,4 @@ class SignUpForm(UserCreationForm):
 
 class AxesCaptchaForm(forms.Form):
     captcha = CaptchaField()
+    
