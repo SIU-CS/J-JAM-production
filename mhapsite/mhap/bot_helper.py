@@ -5,6 +5,10 @@ help_patterns = ['help','please help me']
 
 quote_patterns= ['quote','quotes','inspiration']
 
+help_response=['https://www.adaa.org/tips-manage-anxiety-and-stress','http://tinybuddha.com/']
+
+
+
 import requests
 def process_message(user_message):
     if type(user_message) is not str:
@@ -12,10 +16,13 @@ def process_message(user_message):
     splitted_message = user_message.split(" ")
     #http://stackoverflow.com/questions/740287/how-to-check-if-one-of-the-following-items-is-in-a-list
     if any(message in help_patterns for message in  splitted_message):
-        print "Found help fam"
+        return "You want a quote :)"
     
-    if any(message in quote_patterns for message in  splitted_message):
-        print "Found quote fam"
+    elif any(message in quote_patterns for message in  splitted_message):
+        return "You want help :)"
+    else:
+        return "USAGE ['quote','quotes','inspiration'],['help','please help me']"
+    
 
 
     
