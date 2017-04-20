@@ -55,7 +55,7 @@ class ChatMessages(models.Model):
         return super(ChatMessages,self).save(*args,**kwargs)
 
     def __str__(self):
-        return str(self.user_id) + " " + self.message + str(self.is_user)
+        return str(self.user_id) + " " + str(self.message) + str(self.is_user)
 
 
 class Quote(models.Model):
