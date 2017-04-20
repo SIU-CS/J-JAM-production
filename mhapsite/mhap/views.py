@@ -23,6 +23,7 @@ from .tokens import activation_token
 from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm, ChatForm
 from .models import Post, Profile,Quote,ChatMessages
 
+from .bot_helper import Bot
 import requests,json
 
 
@@ -321,15 +322,18 @@ def bot_page(request):
     if form.is_valid():
         print form.cleaned_data
         info = form.cleaned_data['chat']
+        
+        print Bot.process_message(str(info))
         user_prof = Profile.objects.get(user=request.user)
         print info
         new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
         print new_message,"NEW MESSGE"
-        print info
+
         context = {
             "form" : form,
             "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
         }
         #print context
+        
     return render(request, 'bot.html', context)
 
