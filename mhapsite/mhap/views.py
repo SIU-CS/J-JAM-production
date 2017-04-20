@@ -323,12 +323,12 @@ def bot_page(request):
         print form.cleaned_data
         info = form.cleaned_data['chat']
         
-        print Bot.process_message(str(info))
+        
         user_prof = Profile.objects.get(user=request.user)
-        print info
+        bot_message = ChatMessages.objects.create(message=Bot.process_message(str(info)),user_id=user_prof,is_user=False) 
         new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
         print new_message,"NEW MESSGE"
-
+        print bot_message,"BOT MESSAGE"
         context = {
             "form" : form,
             "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
