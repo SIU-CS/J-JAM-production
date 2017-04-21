@@ -1,0 +1,19 @@
+
+[
+{
+  "model": "mhap.quote",
+  "pk": 1,
+  "fields": {
+    "quote": "All seasons are beautiful for the person who carries happiness within.",
+    "author": "Horace Friess"
+  }
+},
+{
+  "model": "mhap.quote",
+  "pk": 2,
+  "fields": {
+    "quote": "I begin with an idea and then it becomes something else.",
+    "author": "Pablo Picasso"
+  }
+}
+]

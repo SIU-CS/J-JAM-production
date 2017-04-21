@@ -31,6 +31,7 @@ import requests,json
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils.timezone import utc
 
 # Create your views here.
 
@@ -191,6 +192,13 @@ def index(request):
         data.append(["You have no posts!", 0.5])
   
     instance = queryset.first()
+    # if the user has a latest post, display a message if it is older than a day
+    if instance:
+        # this makes sure the dates are in the same format:
+        current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        difference = current_time - instance.updated
+        if difference.days >= 1:
+            messages.info(request, "It looks like you haven't posted in awhile, how have you been?")
 
     second_quote = Quote.objects.get(id=2)
     context = {
