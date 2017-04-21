@@ -1,19 +1,18 @@
-{% load bootstrap3 %}
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
 
 <head>
 
     {% include 'head.html' %}
 
     <title>Home</title>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript" src="graph.js">
-    </script>
+
 </head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {
+        packages: ["corechart"]
+    });
+</script>
 
 {% include 'navbar.html' %}
 <h2>Homepage</h2>
@@ -27,12 +26,7 @@
 
 {% if instance %}
 <p>Here is a graph of your most recent posts' happiness scores:</p>
-<!-- TODO make this bootstrappy and scale to phones properly -->
-<div id="chart_div" style="width: 50%;"></div>
-
-
-
-
+{{ happy_graph.as_html }}
 
 <p>Here's your latest post:</p>
 
