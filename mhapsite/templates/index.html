@@ -44,7 +44,7 @@
                 function selectHandler(e) {
                     var postIndex = chart.getSelection()[0].row;
                     var slug = {{data_slugs|safe}}[postIndex];
-                    window.location.replace(window.location.href + "list/" + slug);
+                    window.location.assign(window.location.href + "list/" + slug);
                 }
                 chart.draw(graph_data, options);
             }
