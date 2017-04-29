@@ -26,15 +26,12 @@ from .models import Post, Profile,Quote,ChatMessages
 from .bot_helper import Bot
 import requests,json
 
+import datetime
+
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-
-
-# for post sentiment graph in homepage view
-from graphos.sources.model import SimpleDataSource
-from graphos.renderers.gchart import BarChart
-import datetime, time
+from django.utils.timezone import utc
 
 # Create your views here.
 
@@ -90,9 +87,7 @@ def post_create(request):
         print request.user.is_authenticated()
         print "IN VALID"
         #instance.refresh_from_db()
-       
         print Profile.objects.get(user=request.user) , "PROFILE"
-       
         instance.user_id = Profile.objects.get(user=request.user)
         print Profile.objects.get(user=request.user)
         #instance.user = request.user
@@ -183,38 +178,40 @@ def index(request):
     queryset = Post.objects.filter(user_id=user_prof)
   
     # Generate mental health visual representation (happy graph)
-    data = [['Posts', 'Happy']]
+    data = []
+    data_slugs = []
     # Start x-axis at time of your very first post
     if queryset:
         for post in reversed(queryset):
-            data.append([post.title, post.sentiment])
+            data.append([post.title.encode('utf-8'), post.sentiment])
+            data_slugs.append([post.slug.encode('utf-8')]);
     else:
         # default graph for no-posts users
-        data.append([0.0, 0.0])
-    
-    data_source = SimpleDataSource(data=data)
-    
-    options = {
-              'title': 'Mental Health Visual Representation',
-              'hAxis': {
-                       'minValue': 0,
-                       'maxValue': 1
-                       }
-              }
-    
-    happy_graph = BarChart(data_source, options=options)
+        data.append(["You have no posts!", 0.5])
   
     instance = queryset.first()
-    quote=None
+
+    # if the user has a latest post, display a message if it is older than a day
+    if instance:
+        # this makes sure the dates are in the same format:
+        current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        difference = current_time - instance.updated
+        if difference.days >= 1:
+            messages.info(request, "It looks like you haven't posted in awhile, how have you been?")
+
+
+
+    #quote=None
     try:
         second_quote = Quote.objects.get(id=2)
     except Exception as e:
         print e
    
     context = {
+        "data": data,
+        "data_slugs": data_slugs,
         "user_prof": user_prof,
         "instance": instance,
-        "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
         "quote_text":second_quote.quote,

@@ -1,0 +1,37 @@
+{% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
+
+<head>
+
+    {% include 'head.html' %}
+
+    <title>Home</title>
+
+</head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {
+        packages: ["corechart"]
+    });
+</script>
+
+{% include 'navbar.html' %}
+<h2>Homepage</h2>
+
+<h3>Hello {{ user_prof.user.username }}!</h3>
+<h4> Quote of the day </h4>
+<h5> <b>Quote </b> : {{quote_text}} </h5>
+<h5> <b> Author </b>: {{quote_author}}</h5>
+
+
+
+{% if instance %}
+<p>Here is a graph of your most recent posts' happiness scores:</p>
+{{ happy_graph.as_html }}
+
+<p>Here's your latest post:</p>
+
+<h3><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></h3>
+<p>{{ instance.content }}</p>
+<h6>Created {{ instance.created }}<br/> Last updated {{ instance.updated }}<br/> Sentiment: {{ instance.sentiment }}<br/> Secret: {{ instance.secret }}</h6>
+{% endif %}
+<p><a href='{{ user_prof.get_list_url }}'>Go to your blog page</a></p>

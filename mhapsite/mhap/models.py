@@ -156,7 +156,11 @@ def contains_patterns(instance, patterns):
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     instance.slug = create_slug(instance)
     instance.sentiment = evaluate_sentiment(instance)
-    instance.seems_depressed = contains_patterns(instance, depression_patterns)
     instance.seems_suicidal = contains_patterns(instance, suicide_patterns)
+    if instance.seems_suicidal:
+        # Suicide makes depression warnings redundant
+        instance.seems_depressed = False
+    else:
+        instance.seems_depressed = contains_patterns(instance, depression_patterns)
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
