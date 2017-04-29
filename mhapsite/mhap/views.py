@@ -1,16 +1,13 @@
 '''
-TODO
-1. Settings page with password change
-2. Need to link database and process forms properly
-3. Fix broken reroute to old username
+This contains all the logic for how views are handled.
+It bridges our Models and Templates.
 
-#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
 '''
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -23,9 +20,10 @@ from axes.utils import reset
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import SignUpForm
 from .tokens import activation_token
-from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
-from .models import Post, Profile,Quote
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm, ChatForm
+from .models import Post, Profile,Quote,ChatMessages
 
+from .bot_helper import Bot
 import requests,json
 
 import datetime
@@ -89,9 +87,7 @@ def post_create(request):
         print request.user.is_authenticated()
         print "IN VALID"
         #instance.refresh_from_db()
-       
         print Profile.objects.get(user=request.user) , "PROFILE"
-       
         instance.user_id = Profile.objects.get(user=request.user)
         print Profile.objects.get(user=request.user)
         #instance.user = request.user
@@ -194,6 +190,7 @@ def index(request):
         data.append(["You have no posts!", 0.5])
   
     instance = queryset.first()
+
     # if the user has a latest post, display a message if it is older than a day
     if instance:
         # this makes sure the dates are in the same format:
@@ -202,7 +199,14 @@ def index(request):
         if difference.days >= 1:
             messages.info(request, "It looks like you haven't posted in awhile, how have you been?")
 
-    second_quote = Quote.objects.get(id=2)
+
+
+    #quote=None
+    try:
+        second_quote = Quote.objects.get(id=2)
+    except Exception as e:
+        print e
+   
     context = {
         "data": data,
         "data_slugs": data_slugs,
@@ -282,12 +286,12 @@ def locked_out(request):
     else:
         form = AxesCaptchaForm()
 
-    return render(request,'locked_out.html', dict(form=form))
-  
+    return render(request, 'locked_out.html', dict(form=form))
+
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user,request.POST)
+        form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
@@ -299,4 +303,34 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', dict(form=form))
+
+
+def bot_page(request):
+    #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
+    #http://tst07.pythonanywhere.com/post/3/
+    info = None
+    form = ChatForm(request.POST or None)
+    context = {
+        "form" : form,
+        "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
+    }
+
+    #IF user is posted data
+    if form.is_valid():
+        print form.cleaned_data
+        info = form.cleaned_data['chat']
+        
+        
+        user_prof = Profile.objects.get(user=request.user)
+        bot_message = ChatMessages.objects.create(message=Bot.process_message(str(info)),user_id=user_prof,is_user=False) 
+        new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
+        print new_message,"NEW MESSGE"
+        print bot_message,"BOT MESSAGE"
+        context = {
+            "form" : form,
+            "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
+        }
+        #print context
+        
+    return render(request, 'bot.html', context)
 

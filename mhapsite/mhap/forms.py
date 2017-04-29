@@ -64,6 +64,14 @@ class PasswordForm(forms.Form):
         print self.user, "IN INIT"
         super(PasswordForm, self).__init__(*args, **kwargs)
 
+class ChatForm(forms.Form):
+    """
+        Extends forms.Form and is essentially a form for inputting chat messages
+    """
+
+    chat = forms.CharField(label=("Input"))
+
+
 class ProfileForm(forms.ModelForm):
 
     class Meta:
