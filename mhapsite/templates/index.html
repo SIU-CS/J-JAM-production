@@ -14,9 +14,29 @@
     });
 </script>
 
-{% include 'navbar.html' %}
-<h2>Homepage</h2>
+    <style>
+         article {
+        margin-left: 170px;
+        margin-right: 170px;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 1em;
+        overflow: hidden;
+        }
+        header, footer {
+        padding: 1em;
+        clear: left;
+        text-align: center;
+        color: white;
+        background-color: #00264d;
+        }
+    </style>
 
+{% include 'navbar.html' %}
+<header><h2>Homepage</h2></header>
+
+<article>
 <h3>Hello {{ user_prof.user.username }}!</h3>
 <h4> Quote of the day </h4>
 <h5> <b>Quote </b> : {{quote_text}} </h5>
@@ -35,3 +55,6 @@
 <h6>Created {{ instance.created }}<br/> Last updated {{ instance.updated }}<br/> Sentiment: {{ instance.sentiment }}<br/> Secret: {{ instance.secret }}</h6>
 {% endif %}
 <p><a href='{{ user_prof.get_list_url }}'>Go to your blog page</a></p>
+</article>
+
+<footer>JJAM</footer>

@@ -1,15 +1,34 @@
 <!--DOCTYPE html -->
+
 {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
 
 <html>
 
 <head>
+    
     {% include 'head.html' %}
     <title>
         {% block head_title %} J-JAM {% endblock head_title %}
     </title>
-    
     <style>
+         article {
+        margin-left: 170px;
+        margin-right: 170px;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 1em;
+        overflow: hidden;
+        }
+        header, footer {
+        padding: 1em;
+        clear: left;
+        text-align: center;
+        color: white;
+        background-color: #00264d;
+        }
+
+
         {
             % block style %
         }
@@ -21,11 +40,11 @@
 </head>
 {% include 'navbar.html' %}
 
-<body style="background:#58FAF4">
+<body>
 
     <div class='container'>
         {% block content %} {% endblock content %}
     </div>
 </body>
-
+<footer>JJAM PRODUCTIONS</footer>
 </html>

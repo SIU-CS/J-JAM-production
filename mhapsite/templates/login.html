@@ -1,22 +1,40 @@
 {# Load the tag library #} {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %}
 <html lang="en">
-
+    <style>
+         article {
+        margin-left: 170px;
+        margin-right: 170px;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 1em;
+        overflow: hidden;
+        }
+        header, footer {
+        padding: 1em;
+        clear: left;
+        text-align: center;
+        color: white;
+        background-color: #00264d;
+        }
+    </style>
 <head>
     {% include 'head.html' %}
 
     <title>Login</title>
 
 </head>
-<h2>Login</h2>
+<header><h2>Login</h2></header>
+<article>
 <form method="post">
     {% csrf_token %} {% bootstrap_form form size="large" %} {% buttons %}
     <button type=" submit " class="btn btn-primary ">
       {% bootstrap_icon "star " %} Submit
     </button> {% endbuttons %}
 </form>
+    </article>
 
-
-
+<article>
 <a href="http://127.0.0.1:8000/password_reset">Password Reset</a>
 
 <br>
@@ -25,3 +43,5 @@
 
 
 <a href="{% url 'social:begin' 'google-oauth2' %} ">Google+</a>
+</article>
+<footer>JJAM</footer>
