@@ -1,6 +1,8 @@
  {% extends "base.html" %} {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %} {% block content %}
-<h1>Form</h1>
+<header><h1>Form</h1></header>
+<article>
 <form method='POST' action=''>{% csrf_token %} {{ form.as_p }}
     <input type='submit' value='Create Post' />
 </form>
+</article>
 {% endblock content %}
