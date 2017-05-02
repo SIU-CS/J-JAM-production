@@ -1,13 +1,53 @@
+
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+<style>
+div.container{
+    width: 100%;
+/*    border: 1px solid gray;*/
+}
+
+header, footer {
+    padding: 1em;
+    clear: left;
+    text-align: center;
+    color: white;
+    background-color: #00264d;
+}
+/*
+blank {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}*/
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+</style>
+
+<div class="container">
+
+    
+    <header><center><h1>{{ title }}</h1></center></header>
     {% for obj in object_list %}
+    <article>
         <h3><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a></h3>
         <p>{{ obj.content }}</p>
         <h6>Created {{ obj.created }}<br/>
             Sentiment: {{ obj.sentiment }}<br/>
             Secret: {{ obj.secret }}</h6>
         <br/>
+    </article>
+
+    
     {% endfor %}
+
+    <footer>JJAM PRODUCTIONS</footer>
+    
 {% endblock content %}
