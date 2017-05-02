@@ -1,6 +1,29 @@
+
 {# Load the tag library #} {% load bootstrap3 %} {# Load CSS and JavaScript #} {% bootstrap_css %} {% bootstrap_javascript %} {# Display django.contrib.messages as Bootstrap alerts #} {% bootstrap_messages %} {% include 'navbar.html' %}
-<h1>Settings</h1>
+    <style>
+         article {
+        margin-left: 170px;
+        margin-right: 170px;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 1em;
+        overflow: hidden;
+        }
+        header, footer {
+        padding: 1em;
+        clear: left;
+        text-align: center;
+        color: white;
+        background-color: #00264d;
+        }
+    </style>
+<header><h1>Settings</h1></header>
+<article>
 <form method="post" class="form">
     {% csrf_token %} {{ form.as_p }} {{form2.as_p}} {{form3.as_p}}
     <input type='submit' value='Settings page' />
 </form>
+</article>
+
+<footer>JJAM</footer>
