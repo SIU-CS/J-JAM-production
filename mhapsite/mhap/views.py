@@ -219,8 +219,8 @@ def index(request):
         "instance": instance,
         #first variable is what is referenced in html
         #second variable is in code
-        "quote_text":"second_quote.quote",
-        "quote_author":"second_quote.author"
+        "quote_text":second_quote.quote
+        "quote_author":second_quote.author
     }
     return render(request,'index.html', context)
 
