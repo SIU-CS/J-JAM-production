@@ -65,15 +65,19 @@ def post_detail(request, slug=None):
     print instance 
     print request.user
     
-    if instance.seems_suicidal:
-        # I hope this link doesn't rot!
-        messages.info(request, mark_safe("<a href='https://suicidepreventionlifeline.org/talk-to-someone-now/'>Suicide is not the answer.</a> Please call 1-800-273-8255 right away."))
-    elif instance.seems_depressed:
-        messages.info(request, mark_safe("Would you like some <a href='https://www.adaa.org/living-with-anxiety/ask-and-learn/resources'>depression resources</a>?"))
-    elif instance.sentiment < 0.3:
-        messages.info(request, mark_safe("I\'m sorry you're having a bad day. Would you like some <a href='https://www.adaa.org/tips-manage-anxiety-and-stress'>tips for managing anxiety and stress</a>?"))
-    else:
-        messages.info(request, "Thank you for posting!")
+    # Only show notifications for fresh posts
+    current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+    difference = current_time - instance.updated
+    if difference.seconds <= 2 * 60:
+        if instance.seems_suicidal:
+            # I hope this link doesn't rot!
+            messages.info(request, mark_safe("<a href='https://suicidepreventionlifeline.org/talk-to-someone-now/'>Suicide is not the answer.</a> Please call 1-800-273-8255 right away."))
+        elif instance.seems_depressed:
+            messages.info(request, mark_safe("Would you like some <a href='https://www.adaa.org/living-with-anxiety/ask-and-learn/resources'>depression resources</a>?"))
+        elif instance.sentiment < 0.3:
+            messages.info(request, mark_safe("I\'m sorry you're having a bad day. Would you like some <a href='https://www.adaa.org/tips-manage-anxiety-and-stress'>tips for managing anxiety and stress</a>?"))
+        else:
+            messages.info(request, "Thank you for posting!")
    # print instance.user_id
     context = {
         "instance": instance,
