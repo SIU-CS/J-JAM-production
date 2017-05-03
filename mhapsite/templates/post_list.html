@@ -1,13 +1,42 @@
+
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+<style>
+div.container{
+    width: 100%;
+/*    border: 1px solid gray;*/
+}
+
+
+/*
+blank {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}*/
+
+
+</style>
+
+<div class="container">
+
+    
+    <header><center><h1>{{ title }}</h1></center></header>
     {% for obj in object_list %}
+    <article>
         <h3><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a></h3>
         <p>{{ obj.content }}</p>
         <h6>Created {{ obj.created }}<br/>
             Sentiment: {{ obj.sentiment }}<br/>
             Secret: {{ obj.secret }}</h6>
         <br/>
+    </article>
+
+    
     {% endfor %}
+
+    
+    
 {% endblock content %}
