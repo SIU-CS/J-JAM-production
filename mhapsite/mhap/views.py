@@ -308,7 +308,7 @@ def change_password(request):
 
     return render(request, 'change_password.html', dict(form=form))
 
-
+@login_required
 def bot_page(request):
     #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
     #http://tst07.pythonanywhere.com/post/3/
