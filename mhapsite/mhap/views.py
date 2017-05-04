@@ -209,12 +209,13 @@ def index(request):
 
 
 
-    #quote=None
+    quote=None
     try:
         second_quote = Quote.objects.get(id=2)
+        quote=second_quote
     except Exception as e:
         print e
-   
+    
     context = {
         "data": data,
         "data_slugs": data_slugs,
@@ -312,15 +313,19 @@ def change_password(request):
 
     return render(request, 'change_password.html', dict(form=form))
 
-
+@login_required
 def bot_page(request):
     #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
     #http://tst07.pythonanywhere.com/post/3/
     info = None
     form = ChatForm(request.POST or None)
+    data = ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user)).order_by('-id')[:10]
+    data_reverse = reversed(data)
     context = {
         "form" : form,
-        "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
+        "help_response_one" : Bot.help_response[0],
+        "help_response_two" : Bot.help_response[1],
+        "data" : data_reverse
     }
 
     #IF user is posted data
@@ -330,13 +335,32 @@ def bot_page(request):
         
         
         user_prof = Profile.objects.get(user=request.user)
-        bot_message = ChatMessages.objects.create(message=Bot.process_message(str(info)),user_id=user_prof,is_user=False) 
-        new_message = ChatMessages.objects.create(message=info,user_id=user_prof,is_user=True)
+        new_message = ChatMessages.objects.create(message=info, user_id=user_prof,is_user=True)
+        message = Bot.process_message(str(info))
+        message_type = ChatMessages.DEFAULT
+        if type(message) is tuple:
+            quote_text = message[0]
+            quote_author = message[1]
+            print quote_text, quote_author
+            message = quote_text + " -" +  quote_author
+        elif type(message) is list:
+            first_resource = message[0]
+            second_resource = message[1]
+            print first_resource, second_resource
+            message = first_resource + " " + second_resource
+            message_type = ChatMessages.RESOURCE
+
+        bot_message = ChatMessages.objects.create(message=message, message_type=message_type, user_id=user_prof,is_user=False) 
         print new_message,"NEW MESSGE"
         print bot_message,"BOT MESSAGE"
+
+        data = ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user)).order_by('-id')[:10]
+        data_reverse = reversed(data)
         context = {
             "form" : form,
-            "data" : ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user))
+            "help_response_one" : Bot.help_response[0],
+            "help_response_two" : Bot.help_response[1],
+            "data" : data_reverse
         }
         #print context
         
