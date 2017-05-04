@@ -4,10 +4,9 @@ python:
 install:
 - pip install -r requirements.txt
 script:
-- rm db.sqlite3
 - python mhapsite/manage.py makemigrations
 - python mhapsite/manage.py migrate
-- python mhapsite/manage.py loaddata ../fixtures/quotes.json
+- python mhapsite/manage.py loaddata ./fixtures/quotes.json
 - python mhapsite/manage.py test
 env:
   matrix:
