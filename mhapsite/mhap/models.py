@@ -45,6 +45,11 @@ class Profile(models.Model):
 #http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add
 class ChatMessages(models.Model):
     message = models.CharField(max_length=255)
+    RESOURCE = "r"
+    DEFAULT = "d"
+    choices = ((RESOURCE, "resource"),
+               (DEFAULT, "default"))
+    message_type = models.CharField(max_length=1, choices=choices, default=DEFAULT)
     user_id = models.ForeignKey(Profile)
     is_user = models.BooleanField(default=True)
     time_stamp = models.DateTimeField(default=None, editable=False,null=True)
