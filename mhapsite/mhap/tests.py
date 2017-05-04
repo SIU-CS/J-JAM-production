@@ -34,8 +34,4 @@ class QuoteTest(TestCase):
         default_quote = Quote.objects.get(quote="quote")
         self.assertEqual(default_quote.quote,"quote")
         self.assertEqual(default_quote.author,"author")
-        
-class ProfileTest(TestCase):
-    def setUp(self):
-        Profile.objects.create(
     
