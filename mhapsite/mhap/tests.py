@@ -1,6 +1,7 @@
 from django.test import TestCase,Client
 from django.urls import reverse
 from mhap.models import Quote
+from mhap.models import Profile
 # Create your tests here.
 
 class AppViewTest(TestCase):
@@ -12,6 +13,18 @@ class AppViewTest(TestCase):
     def test_create_page_redirect(self):
         response = self.client.get(reverse('mhap:create'))
         self.assertEqual(response.url,'/login/?next=/mhap/create/')
+        
+    def test_list_page_redirect(self):
+        response = self.client.get(reverse('mhap:list'))
+        self.assertEqual(response.url,'/login/?next=/mhap/list/')
+        
+    def test_bot_page_redirect(self):
+        response = self.client.get(reverse('mhap:bot_page'))
+        self.assertEqual(response.url,'/login/?next=/mhap/bot/')
+        
+    def test_settings_page_redirect(self):
+        response = self.client.get(reverse('mhap:settings'))
+        self.assertEqual(response.url,'/login/?next=/mhap/settings/')
 
 class QuoteTest(TestCase):
     def setUp(self):
@@ -21,3 +34,4 @@ class QuoteTest(TestCase):
         default_quote = Quote.objects.get(quote="quote")
         self.assertEqual(default_quote.quote,"quote")
         self.assertEqual(default_quote.author,"author")
+    

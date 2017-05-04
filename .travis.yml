@@ -1,0 +1,13 @@
+language: python
+python:
+- '2.7'
+install:
+- pip install -r requirements.txt
+script:
+- python mhapsite/manage.py makemigrations
+- python mhapsite/manage.py migrate
+- python mhapsite/manage.py loaddata ./fixtures/quotes.json
+- python mhapsite/manage.py test mhap
+env:
+  global:
+    secure: 2clIgJhQUh3u+Ft8gk4OKT8ZlBUmuKE+6vIs50MVaJ/qepyIFfrj+eA5LwvY6xvMIIknvBfS7Ll23B9DW8HaN4zyf3mSCzr1oCJZ8VgO1YziAnG37HnD9LRjWThGPSSkEErylfUNHNXTle1p+BBB5PU0Ofcgzr5gbD8Rojuozv1M/TJVzjufKOulgDvFrpwqFZRPV6qwNdPsfaQtpo5GKfsTNY383AwJuR2LZ90K4Y28F8j7m72KEDhRG3mAzy2mrwxbPFmoXSgUh+s8fB4CD0lwjAYxZw/lJahoopRzF7fmb6/trRWw+Aq8cM+FwyxyzBs5HqADvVJEYs1XUPIfPRKMLlpsRLvGd/mFhQDlkoz4M4DernUHgBYJ2epqvnJX9FQ6Xd2KJGoF9ZoQmeYlH6q329N7pgeDIqqhPkF31uYm+Dz+ZqLaNFnN6QcRSmKolPz6Pvev4E1APrFB2p1P6segXrzAL1xAWwvGJ7TC5vjeK0tRKG3GxkgRDjypmXQrhux20oPpjXDaPb/G6CvXNUgLcNAAuEbEuIyWPh/ysoSFvPb5NuN79PDGb9b7dIj79kI1ziKEf23pFwFoAJLpQZBibe74aqxH2tgCf0aDlyFfp5AGqVNr+JsSZmSAQFeFanc9dViNWKlT6wWMzPN1JzratwJIBG3Pi0WyhpINRHI=
