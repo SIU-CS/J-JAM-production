@@ -336,7 +336,7 @@ def bot_page(request):
         user_prof = Profile.objects.get(user=request.user)
         new_message = ChatMessages.objects.create(message=info, user_id=user_prof,is_user=True)
         message = Bot.process_message(str(info))
-        message_type = "default"
+        message_type = ChatMessages.DEFAULT
         if type(message) is tuple:
             quote_text = message[0]
             quote_author = message[1]
@@ -347,7 +347,7 @@ def bot_page(request):
             second_resource = message[1]
             print first_resource, second_resource
             message = first_resource + " " + second_resource
-            message_type = "resource"
+            message_type = ChatMessages.RESOURCE
 
         bot_message = ChatMessages.objects.create(message=message, message_type=message_type, user_id=user_prof,is_user=False) 
         print new_message,"NEW MESSGE"
