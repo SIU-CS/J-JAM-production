@@ -14,15 +14,15 @@ class AppViewTest(TestCase):
         response = self.client.get(reverse('mhap:create'))
         self.assertEqual(response.url,'/login/?next=/mhap/create/')
         
-    def test_create_page_redirect(self):
+    def test_list_page_redirect(self):
         response = self.client.get(reverse('mhap:list/'))
         self.assertEqual(response.url,'/login/?next=/mhap/list/')
         
-    def test_create_page_redirect(self):
+    def test_bot_page_redirect(self):
         response = self.client.get(reverse('mhap:bot'))
         self.assertEqual(response.url,'/login/?next=/mhap/bot/')
         
-    def test_create_page_redirect(self):
+    def test_settings_page_redirect(self):
         response = self.client.get(reverse('mhap:settings'))
         self.assertEqual(response.url,'/login/?next=/mhap/settings/')
 
