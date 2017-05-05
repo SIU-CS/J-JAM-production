@@ -298,6 +298,7 @@ def locked_out(request):
     return render(request, 'locked_out.html', dict(form=form))
 
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
