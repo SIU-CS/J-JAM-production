@@ -41,17 +41,14 @@ class QuoteTest(TestCase):
         self.assertEqual(default_quote.author,"author")
 
 class BotTest(TestCase):
-    def test_fetch_quote(self):
-        quote_tuple = Bot.fetch_quote()
-        self.assertEqual(type(quote_tuple), tuple)
-
-        quote_text, quote_author = quote_tuple
-        self.assertEqual(type(quote_text), str)
-        self.assertEqual(type(quote_author), str)
-    
     def test_process_message_help(self):
         help_response = Bot.process_message("help")
         self.assertEqual(help_response, Bot.help_response)
+    
+    def test_process_message_default(self):
+        default_response = Bot.process_message("some other pattern")
+        expected_response = "I am not a very intelligent bot. Please ask the MHAP team to upgrade me"
+        self.assertEqual(default_response, expected_response)
 
 
 # class ProfileTest(TestCase):
