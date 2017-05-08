@@ -22,6 +22,8 @@ JessicaStrunk@siu.edu
 
 
 # Get started
+Use branch `master`
+
 ```bash
 sudo apt-get install python-pip python-dev
 sudo apt-get install python-virtualenv
