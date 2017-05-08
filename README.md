@@ -1,6 +1,7 @@
 # J-JAM-production
 An AI infused personal blogging web app for users to write about their mental health.
 
+[![Build Status](https://travis-ci.org/SIU-CS/J-JAM-production.svg?branch=master)](https://travis-ci.org/SIU-CS/J-JAM-production)
 
 ## Members
 
