@@ -29,6 +29,8 @@ sudo apt-get install python-pip python-dev
 sudo apt-get install python-virtualenv
 
 #Create python environment
+git clone https://github.com/SIU-CS/J-JAM-production.git
+cd J-JAM-production
 virtualenv djangofy 
 
 #Make sure all the required api keys are in the .bashrc
@@ -38,7 +40,12 @@ source djangofy/bin/activate
 
 pip install -r requirements
 
-python manage.py runserver
+python mhapsite/manage.py makemigrations
+python mhapsite/manage.py migrate
+python mhapsite/manage.py loaddata ./fixtures/quotes.json
+python mhapsite/manage.py runserver
+
+
 ```
 
 ## Coding style
