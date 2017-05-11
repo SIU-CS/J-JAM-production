@@ -1,4 +1,4 @@
-appdirs==1.4.0
+
 astroid==1.4.9
 autopep8==1.2.4
 backports.functools-lru-cache==1.3
