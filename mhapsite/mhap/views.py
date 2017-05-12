@@ -1,16 +1,13 @@
 '''
-TODO
-1. Settings page with password change
-2. Need to link database and process forms properly
-3. Fix broken reroute to old username
+This contains all the logic for how views are handled.
+It bridges our Models and Templates.
 
-#https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
 
 '''
 
 
 from django.contrib import messages, auth
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -19,24 +16,23 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
 from axes.utils import reset
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import SignUpForm
 from .tokens import activation_token
-from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm
-from .models import Post, Profile,Quote
+from .forms import PostForm, AxesCaptchaForm, ProfileForm, UserForm, PasswordForm, ChatForm
+from .models import Post, Profile,Quote,ChatMessages
 
+from .bot_helper import Bot
 import requests,json
+
+import datetime
 
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-
-
-# for post sentiment graph in homepage view
-from graphos.sources.model import SimpleDataSource
-from graphos.renderers.gchart import BarChart
-import datetime, time
+from django.utils.timezone import utc
 
 # Create your views here.
 
@@ -69,12 +65,19 @@ def post_detail(request, slug=None):
     print instance 
     print request.user
     
-    if instance.seems_suicidal:
-        messages.info(request, "Suicide is not the answer.")
-    if instance.seems_depressed:
-        messages.info(request, "Would you like some depression resources?")
-    if instance.sentiment < 0.3:
-        messages.info(request, "I\'m sorry you're having a bad day.")
+    # Only show notifications for fresh posts
+    current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+    difference = current_time - instance.updated
+    if difference.seconds <= 2 * 60:
+        if instance.seems_suicidal:
+            # I hope this link doesn't rot!
+            messages.info(request, mark_safe("<a href='https://suicidepreventionlifeline.org/talk-to-someone-now/'>Suicide is not the answer.</a> Please call 1-800-273-8255 right away."))
+        elif instance.seems_depressed:
+            messages.info(request, mark_safe("Would you like some <a href='https://www.adaa.org/living-with-anxiety/ask-and-learn/resources'>depression resources</a>?"))
+        elif instance.sentiment < 0.3:
+            messages.info(request, mark_safe("I\'m sorry you're having a bad day. Would you like some <a href='https://www.adaa.org/tips-manage-anxiety-and-stress'>tips for managing anxiety and stress</a>?"))
+        else:
+            messages.info(request, "Thank you for posting!")
    # print instance.user_id
     context = {
         "instance": instance,
@@ -92,9 +95,7 @@ def post_create(request):
         print request.user.is_authenticated()
         print "IN VALID"
         #instance.refresh_from_db()
-       
         print Profile.objects.get(user=request.user) , "PROFILE"
-       
         instance.user_id = Profile.objects.get(user=request.user)
         print Profile.objects.get(user=request.user)
         #instance.user = request.user
@@ -185,34 +186,41 @@ def index(request):
     queryset = Post.objects.filter(user_id=user_prof)
   
     # Generate mental health visual representation (happy graph)
-    data = [['Posts', 'Happy']]
+    data = []
+    data_slugs = []
     # Start x-axis at time of your very first post
     if queryset:
         for post in reversed(queryset):
-            data.append([post.title, post.sentiment])
+            data.append([post.title.encode('utf-8'), post.sentiment])
+            data_slugs.append([post.slug.encode('utf-8')]);
     else:
         # default graph for no-posts users
-        data.append([0.0, 0.0])
-    
-    data_source = SimpleDataSource(data=data)
-    
-    options = {
-              'title': 'Mental Health Visual Representation',
-              'hAxis': {
-                       'minValue': 0,
-                       'maxValue': 1
-                       }
-              }
-    
-    happy_graph = BarChart(data_source, options=options)
+        data.append(["You have no posts!", 0.5])
   
     instance = queryset.first()
 
-    second_quote = Quote.objects.get(id=2)
+    # if the user has a latest post, display a message if it is older than a day
+    if instance:
+        # this makes sure the dates are in the same format:
+        current_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        difference = current_time - instance.updated
+        if difference.days >= 1:
+            messages.info(request, "It looks like you haven't posted in awhile, how have you been?")
+
+
+
+    quote=None
+    try:
+        second_quote = Quote.objects.get(id=2)
+        quote=second_quote
+    except Exception as e:
+        print e
+    
     context = {
+        "data": data,
+        "data_slugs": data_slugs,
         "user_prof": user_prof,
         "instance": instance,
-        "happy_graph": happy_graph,
         #first variable is what is referenced in html
         #second variable is in code
         "quote_text":second_quote.quote,
@@ -287,12 +295,13 @@ def locked_out(request):
     else:
         form = AxesCaptchaForm()
 
-    return render(request,'locked_out.html', dict(form=form))
-  
+    return render(request, 'locked_out.html', dict(form=form))
+
 #https://simpleisbetterthancomplex.com/tips/2016/08/04/django-tip-9-password-change-form.html
+@login_required
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user,request.POST)
+        form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
@@ -304,4 +313,57 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', dict(form=form))
+
+@login_required
+def bot_page(request):
+    #http://stackoverflow.com/questions/40829456/render-form-data-to-the-same-page
+    #http://tst07.pythonanywhere.com/post/3/
+    info = None
+    form = ChatForm(request.POST or None)
+    data = ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user)).order_by('-id')[:10]
+    data_reverse = reversed(data)
+    context = {
+        "form" : form,
+        "help_response_one" : Bot.help_response[0],
+        "help_response_two" : Bot.help_response[1],
+        "data" : data_reverse
+    }
+
+    #IF user is posted data
+    if form.is_valid():
+        print form.cleaned_data
+        info = form.cleaned_data['chat']
+        
+        
+        user_prof = Profile.objects.get(user=request.user)
+        new_message = ChatMessages.objects.create(message=info, user_id=user_prof,is_user=True)
+        message = Bot.process_message(str(info))
+        message_type = ChatMessages.DEFAULT
+        if type(message) is tuple:
+            quote_text = message[0]
+            quote_author = message[1]
+            print quote_text, quote_author
+            message = quote_text + " -" +  quote_author
+        elif type(message) is list:
+            first_resource = message[0]
+            second_resource = message[1]
+            print first_resource, second_resource
+            message = first_resource + " " + second_resource
+            message_type = ChatMessages.RESOURCE
+
+        bot_message = ChatMessages.objects.create(message=message, message_type=message_type, user_id=user_prof,is_user=False) 
+        print new_message,"NEW MESSGE"
+        print bot_message,"BOT MESSAGE"
+
+        data = ChatMessages.objects.filter(user_id=Profile.objects.get(user=request.user)).order_by('-id')[:10]
+        data_reverse = reversed(data)
+        context = {
+            "form" : form,
+            "help_response_one" : Bot.help_response[0],
+            "help_response_two" : Bot.help_response[1],
+            "data" : data_reverse
+        }
+        #print context
+        
+    return render(request, 'bot.html', context)
 

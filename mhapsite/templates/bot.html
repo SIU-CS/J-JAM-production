@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2> Welcome to the bot page </h2>
+
+    {% for message in data %}
+    {% if message.message_type == message.RESOURCE %}
+        <h4><a href='{{ help_response_one }}'>{{ help_response_one }}</a></h4>
+        <h4><a href='{{ help_response_two }}'>{{ help_response_two }}</a></h4>
+    {% else %}
+        <h4>{{ message.message }}</h4>
+    {% endif %}
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %} {{ form }}
+        <button type="submit">Save changes</button>
+    </form>
+{% endblock content %}
